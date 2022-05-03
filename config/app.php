@@ -194,4 +194,9 @@ return [
         // 'ExampleClass' => App\Example\ExampleClass::class,
     ])->toArray(),
 
+    /**
+     * CUSTOM
+     */
+    'app_mode' => env('APP_MODE', 'local')
+
 ];
