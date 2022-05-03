@@ -45,7 +45,10 @@ class AuthController extends Controller
         if (!Auth::attempt($request->only('email', 'password')))
         {
             return response()
-                ->json(['message' => 'Unauthorized'], 401);
+                ->json([
+                    'message' => 'Unauthorized',
+                    'success' => false
+                ], 401);
         }
 
         $user = User::where('email', $request['email'])->firstOrFail();
@@ -53,7 +56,7 @@ class AuthController extends Controller
         $token = $user->createToken(env('HASH_TOKEN'))->plainTextToken;
 
         return response()
-            ->json(['message' => 'Hi '.$user->name.', welcome to home','access_token' => $token, 'token_type' => 'Bearer', ]);
+            ->json(['success' => true, 'message' => 'Hi '.$user->name.', welcome to home','access_token' => $token, 'token_type' => 'Bearer', ]);
     }
 
     /**
@@ -67,7 +70,7 @@ class AuthController extends Controller
         $user = $request->user();
         $user->currentAccessToken()->delete();
         return response()->json([
-            'success' => false,
+            'success' => true,
             'message' => 'Logout successfully'
         ], 200);
     }
