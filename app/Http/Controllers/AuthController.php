@@ -7,10 +7,19 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
+
+use App\Http\Library\ApiHelpers;
 
 class AuthController extends Controller
 {
-    public function register(Request $request)
+    use ApiHelpers;
+
+    /**
+     * register admin
+     */
+    public function registerAdmin(Request $request) : JsonResponse
     {
         $validator = Validator::make($request->all(),[
             'name' => 'required|string|max:255',
@@ -18,70 +27,130 @@ class AuthController extends Controller
             'password' => 'required|string|min:8'
         ]);
 
-        if($validator->fails()){
-            return response()->json($validator->errors());
+        if ($validator->fails()) {
+            return $this->onError($validator->errors()->first(), 400);
+        }
+
+        if ($this->isAdmin($request->user())) {
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'role_id' => 1
+            ]);
+
+            $token = $user->createToken(env('HASH_TOKEN'), ['admin'])->plainTextToken;
+
+            $result = [
+                'user' => $user,
+                'access_token' => $token
+            ];
+            return $this->onSuccess($result, 'Admin registered');
+        }
+        return $this->onError('Unauthorized', 401);
+    }
+
+    /**
+     * register warehouse officer
+     */
+    public function registerWarehouseOfficer(Request $request) : JsonResponse
+    {
+        $validator = Validator::make($request->all(),[
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8'
+        ]);
+
+        if ($validator->fails()){
+            return $this->onError($validator->errors()->first(), 400);
+        }
+        if ($this->isAdmin($request->user())) {
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'role_id' => 2
+            ]);
+
+            $token = $user->createToken(env('HASH_TOKEN'), ['warehouse_officer'])->plainTextToken;
+            $result = [
+                'user' => $user,
+                'access_token' => $token
+            ];
+            return $this->onSuccess($result, 'Warehouse officer registered');
+        }
+        return $this->onError('Unauthorized', 401);
+    }
+
+    /**
+     * register dropshipper
+     */
+    public function registerDropshipper(Request $request) : JsonResponse
+    {
+        $validator = Validator::make($request->all(),[
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8'
+        ]);
+
+        if ($validator->fails()){
+            return $this->onError($validator->errors()->first(), 400);
         }
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password)
-         ]);
+            'password' => Hash::make($request->password),
+            'role_id' => 3
+        ]);
 
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()
-            ->json(['data' => $user,'access_token' => $token, 'token_type' => 'Bearer', ]);
+        $token = $user->createToken(env('HASH_TOKEN'), ['dropshipper'])->plainTextToken;
+        $result = [
+            'user' => $user,
+            'access_token' => $token
+        ];
+        return $this->onSuccess($result, 'Dropshipper registered');
     }
 
     /**
-     * Handle an authentication attempt.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * login.
      */
-    public function login(Request $request)
+    public function login(Request $request) : JsonResponse
     {
         if (!Auth::attempt($request->only('email', 'password')))
         {
-            return response()
-                ->json([
-                    'message' => 'Unauthorized',
-                    'success' => false
-                ], 401);
+            return $this->onError('Unauthorized', 401);
         }
 
         $user = User::where('email', $request['email'])->firstOrFail();
-
+        if (!$user) {
+            return $this->onError('Failed login', 400);
+        }
         $token = $user->createToken(env('HASH_TOKEN'))->plainTextToken;
-
-        return response()
-            ->json(['success' => true, 'message' => 'Hi '.$user->name.', welcome to home','access_token' => $token, 'token_type' => 'Bearer', ]);
+        $result = [
+            'user' => $user,
+            'access_token' => $token
+        ];
+        return $this->onSuccess($result, 'Login successfully');
     }
 
     /**
      * Log the user out of the application.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
      */
-    public function logout(Request $request)
+    public function logout(Request $request) : JsonResponse
     {
         $user = $request->user();
         $user->currentAccessToken()->delete();
-        return response()->json([
-            'success' => true,
-            'message' => 'Logout successfully'
-        ], 200);
+        return $this->onSuccess(null, 'Logout successfully');
     }
 
-    public function logoutAll(Request $request) {
+    /**
+     * Log out all session of current user.
+     */
+    public function logoutAll(Request $request) : JsonResponse
+    {
         $user = $request->user();
         $user->tokens()->delete();
-        $respon = [
-            'success' => true,
-            'message' => 'Logout successfully',
-        ];
-        return response()->json($respon, 200);
+        return $this->onSuccess(null, 'Logout successfully');
     }
 }

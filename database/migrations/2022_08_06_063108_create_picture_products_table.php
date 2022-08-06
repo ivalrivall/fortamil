@@ -13,8 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('users', function($table) {
-            $table->integer('role_id')->default(1);
+        Schema::create('picture_products', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('product_id');
+            $table->longText('path');
+            $table->longText('thumbnail_path');
+            $table->boolean('is_featured');
+            $table->softDeletes();
+            $table->timestamps();
         });
     }
 
@@ -25,8 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('users', function($table) {
-            $table->dropColumn('role_id');
-        });
+        Schema::dropIfExists('picture_products');
     }
 };

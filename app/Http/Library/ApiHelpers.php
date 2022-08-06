@@ -25,12 +25,25 @@ trait ApiHelpers
         return false;
     }
 
-    protected function isSubscriber($user): bool
+    protected function isWarehouseOfficer($user): bool
     {
         if (!empty($user)) {
-            return $user->tokenCan('subscriber');
+            return $user->tokenCan('warehouse_officer');
         }
 
+        return false;
+    }
+
+    protected function isAuthehticatedUser($user): bool
+    {
+        if (!empty($user)) {
+            $isWarehouse = $user->tokenCan('warehouse_officer');
+            $isDropshipper = $user->tokenCan('dropshipper');
+            $isAdmin = $user->tokenCan('admin');
+            if ($isWarehouse || $isDropshipper || $isAdmin) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -38,20 +51,22 @@ trait ApiHelpers
     {
         return response()->json([
             'status' => $code,
+            'success' => true,
             'message' => $message,
             'data' => $data,
         ], $code);
     }
 
-    protected function onError(int $code, string $message = ''): JsonResponse
+    protected function onError(string $message = '', int $code): JsonResponse
     {
         return response()->json([
             'status' => $code,
+            'success' => false,
             'message' => $message,
         ], $code);
     }
 
-    protected function postValidationRules(): array
+    protected function productValidationRules(): array
     {
         return [
             'title' => 'required|string',

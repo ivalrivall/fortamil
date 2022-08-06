@@ -68,7 +68,7 @@ return [
 
         'pgsql' => [
             'driver' => 'pgsql',
-            'url' => env('DATABASE_URL'),
+            'url' => config('app.app_mode') == 'heroku' ? env('DATABASE_URL') : '',
             'host' => config('app.app_mode') == 'heroku' ? $DATABASE_URL['host'] : env('DB_HOST', '127.0.0.1'),
             'port' => config('app.app_mode') == 'heroku' ? $DATABASE_URL['port'] : env('DB_PORT', '5432'),
             'database' => config('app.app_mode') == 'heroku' ? ltrim($DATABASE_URL['path'], '/') : env('DB_DATABASE', 'forge'),

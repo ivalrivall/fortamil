@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\MarketplaceController;
+use App\Http\Controllers\ProductController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,18 +17,31 @@ use App\Http\Controllers\AuthController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+Route::middleware('auth:sanctum')->get('user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('register', [AuthController::class, 'register']);
+Route::post('register/dropshipper', [AuthController::class, 'registerDropshipper']);
+
 Route::post('login', [AuthController::class, 'login']);
+
 Route::group(['middleware' => ['auth:sanctum']], function () {
+    // REGISTER
+    Route::post('register/warehouse', [AuthController::class, 'registerWarehouseOfficer']);
+    Route::post('register/admin', [AuthController::class, 'registerAdmin']);
+
+    // PRODUCT
+    Route::post('product', [ProductController::class, 'create']);
+
+    // PROFILE
     Route::get('/profile', function(Request $request) {
         return auth()->user();
     });
 
-    // API route for logout user
+    // MARKETPLACE
+    Route::get('marketplace', [MarketplaceController::class, 'getAll']);
+
+    // LOGOUT
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('logoutall', [AuthController::class, 'logoutAll']);
 });
