@@ -26,12 +26,4 @@ class MarketplaceController extends Controller
         }
         return $this->onError('Unauthorized', 401);
     }
-
-    /**
-     * add new marketplace
-     */
-    public function create(Request $request) : JsonResponse
-    {
-
-    }
 }

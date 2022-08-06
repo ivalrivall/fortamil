@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CloudinaryController;
 use App\Http\Controllers\MarketplaceController;
 use App\Http\Controllers\ProductController;
 
@@ -44,4 +45,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     // LOGOUT
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('logoutall', [AuthController::class, 'logoutAll']);
+
+    // UPLOAD
+    Route::post('upload', [CloudinaryController::class, 'upload']);
 });
