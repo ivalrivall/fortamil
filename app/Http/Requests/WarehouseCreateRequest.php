@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StorePaginateRequest extends FormRequest
+class WarehouseCreateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,10 +24,9 @@ class StorePaginateRequest extends FormRequest
     public function rules()
     {
         return [
-            'per_page' => 'present|nullable',
-            'page' => 'present|nullable',
-            'search' => 'present|nullable|string',
-            'sort' => 'present|nullable|string'
+            'name' => 'nullable|string',
+            'picture' => 'required|file',
+            'address' => 'required|string'
         ];
     }
 }

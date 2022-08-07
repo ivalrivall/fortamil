@@ -2,13 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Store;
-
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Validator;
 
 use App\Http\Library\ApiHelpers;
+use App\Http\Requests\BasePaginateRequest;
 use App\Http\Requests\StoreCreateRequest;
 use App\Interfaces\AddressRepositoryInterface;
 use App\Interfaces\CloudinaryRepositoryInterface;
@@ -72,7 +69,7 @@ class StoreController extends Controller
     /**
      * get store paginate
      */
-    public function paginate(StoreCreateRequest $request) : JsonResponse
+    public function paginate(BasePaginateRequest $request) : JsonResponse
     {
         $validated = $request->validated();
 

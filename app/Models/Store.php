@@ -24,4 +24,9 @@ class Store extends Model
     {
         return $this->morphOne(Address::class, 'addressable')->latestOfMany();
     }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
 }

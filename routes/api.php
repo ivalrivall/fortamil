@@ -8,6 +8,7 @@ use App\Http\Controllers\MarketplaceController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RegionController;
 use App\Http\Controllers\StoreController;
+use App\Http\Controllers\WarehouseController;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,6 +48,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('/profile', function(Request $request) {
             return auth()->user();
         });
+
+        // WAREHOUSE
+        Route::get('warehouse/paginate', [WarehouseController::class, 'paginate']);
+        Route::post('warehouse', [WarehouseController::class, 'create']);
 
         Route::group(['middleware' => ['dropshipper']], function () {
             // STORE

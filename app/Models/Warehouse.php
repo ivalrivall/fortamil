@@ -10,6 +10,8 @@ class Warehouse extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $fillable = ['name', 'address', 'picture'];
+
     public function addresses()
     {
         return $this->morphMany(Address::class, 'addressable');

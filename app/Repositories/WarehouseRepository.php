@@ -2,11 +2,11 @@
 
 namespace App\Repositories;
 
-use App\Interfaces\StoreRepositoryInterface;
-use App\Models\Store;
+use App\Interfaces\WarehouseRepositoryInterface;
+use App\Models\Warehouse;
 use App\Repositories\BaseRepository;
 
-class StoreRepository extends BaseRepository implements StoreRepositoryInterface
+class WarehouseRepository extends BaseRepository implements WarehouseRepositoryInterface
 {
     /**
      * @var Model
@@ -18,7 +18,7 @@ class StoreRepository extends BaseRepository implements StoreRepositoryInterface
      *
      * @param Model $model
      */
-    public function __construct(Store $model)
+    public function __construct(Warehouse $model)
     {
         $this->model = $model;
     }
@@ -28,7 +28,7 @@ class StoreRepository extends BaseRepository implements StoreRepositoryInterface
         $per_page = $request->per_page;
         $sort = $request->sort;
 
-        $data = $this->model->where('user_id', $request->user()->id);
+        $data = $this->model;
 
         if ($sort) {
             $sort = explode('|', $sort);

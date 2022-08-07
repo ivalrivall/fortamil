@@ -4,7 +4,7 @@ namespace App\Interfaces;
 
 use App\Interfaces\BaseRepositoryInterface;
 
-interface StoreRepositoryInterface extends BaseRepositoryInterface
+interface WarehouseRepositoryInterface extends BaseRepositoryInterface
 {
     public function paginate($payload);
 }
