@@ -28,17 +28,17 @@ class MarketplaceSeeder extends Seeder
             ],
             [
                 'name' => 'Shopee',
-                'email' => 'shopee',
+                'slug' => 'shopee',
                 'picture' => config('app.url').'/assets/images/shopee.jpg'
             ],
             [
                 'name' => 'Lazada',
-                'email' => 'lazada',
+                'slug' => 'lazada',
                 'picture' => config('app.url').'/assets/images/lazada.png'
             ],
             [
                 'name' => 'Blibli',
-                'email' => 'blibli',
+                'slug' => 'blibli',
                 'picture' => config('app.url').'/assets/images/blibli.png'
             ]
         ]);
