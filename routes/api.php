@@ -7,6 +7,7 @@ use App\Http\Controllers\CloudinaryController;
 use App\Http\Controllers\MarketplaceController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RegionController;
+use App\Http\Controllers\StoreController;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,6 +46,11 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         // PROFILE
         Route::get('/profile', function(Request $request) {
             return auth()->user();
+        });
+
+        Route::group(['middleware' => ['dropshipper']], function () {
+            // STORE
+            Route::post('store', [StoreController::class, 'create']);
         });
 
         Route::group(['middleware' => ['admin']], function () {

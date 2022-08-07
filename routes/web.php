@@ -16,3 +16,10 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+Route::get('/unauthenticate', function () {
+    return response()->json([
+        'message' => 'Unauthenticate',
+        'code' => 401,
+        'success' => false
+    ], 401);
+})->name('unauthenticate');

@@ -6,5 +6,6 @@
 - php artisan key:generate
 - php artisan migrate
 - php artisan db:seed
-- (optional) php artisan db:seed --class=WilayahSeeder
+- (one time only) php artisan db:seed --class=WilayahSeeder
+- php artisan optimize:clear
 ```

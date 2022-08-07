@@ -26,7 +26,7 @@ class CloudinaryRepository extends BaseRepository implements CloudinaryRepositor
 
     public function upload(array $payload) : string
     {
-        $uploadedFileUrl = Cloudinary::upload($payload['file'])->getSecurePath();
+        $uploadedFileUrl = Cloudinary::upload($payload['file']->getRealPath())->getSecurePath();
         return $uploadedFileUrl;
     }
 }

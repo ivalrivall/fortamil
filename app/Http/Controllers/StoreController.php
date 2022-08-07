@@ -9,6 +9,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
 
 use App\Http\Library\ApiHelpers;
+use App\Http\Requests\StoreCreateRequest;
 use App\Interfaces\AddressRepositoryInterface;
 use App\Interfaces\CloudinaryRepositoryInterface;
 use App\Interfaces\StoreRepositoryInterface;
@@ -24,7 +25,7 @@ class StoreController extends Controller
     public function __construct(
         StoreRepositoryInterface $storeRepository,
         AddressRepositoryInterface $addressRepository,
-        CloudinaryRepositoryInterface $cloudinary,
+        CloudinaryRepositoryInterface $cloudinary
     )
     {
         $this->storeRepository = $storeRepository;
@@ -35,12 +36,13 @@ class StoreController extends Controller
     /**
      * create store
      */
-    public function create(Request $request) : JsonResponse
+    public function create(StoreCreateRequest $request) : JsonResponse
     {
-        $slug = $this->createSlug($request->name);
         $validated = $request->validated();
 
-        $pictureUrl = $this->cloudinary->upload($request->file('file'));
+        $slug = $this->createSlug($request->name);
+
+        $pictureUrl = $this->cloudinary->upload(['file' => $request->file('picture')]);
 
         $store = $this->storeRepository->create([
             'name' => $validated['name'],
@@ -55,8 +57,13 @@ class StoreController extends Controller
         $address->title = $validated['address_title'];
         $address->recipient = $validated['address_recipient'];
         $address->phone_recipient = $validated['address_phone_recipient'];
+        $address->city_id = $validated['city_id'];
+        $address->district_id = $validated['district_id'];
+        $address->province_id = $validated['province_id'];
+        $address->village_id = $validated['village_id'];
+        $address->postal_code = $validated['postal_code'];
 
-        $store->addresses()->save($store);
+        $store->addresses()->save($address);
 
         return $this->onSuccess($store, 'Store created');
     }
