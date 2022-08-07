@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CloudinaryController;
 use App\Http\Controllers\MarketplaceController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\RegionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,25 +28,42 @@ Route::post('register/dropshipper', [AuthController::class, 'registerDropshipper
 Route::post('login', [AuthController::class, 'login']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
-    // REGISTER
-    Route::post('register/warehouse', [AuthController::class, 'registerWarehouseOfficer']);
-    Route::post('register/admin', [AuthController::class, 'registerAdmin']);
+    Route::group(['middleware' => ['role.all']], function () {
+        // PRODUCT
+        Route::post('product', [ProductController::class, 'create']);
 
-    // PRODUCT
-    Route::post('product', [ProductController::class, 'create']);
+        // MARKETPLACE
+        Route::get('marketplace', [MarketplaceController::class, 'getAll']);
 
-    // PROFILE
-    Route::get('/profile', function(Request $request) {
-        return auth()->user();
+        // LOGOUT
+        Route::post('logout', [AuthController::class, 'logout']);
+        Route::post('logoutall', [AuthController::class, 'logoutAll']);
+
+        // UPLOAD
+        Route::post('upload', [CloudinaryController::class, 'upload']);
+
+        // PROFILE
+        Route::get('/profile', function(Request $request) {
+            return auth()->user();
+        });
+
+        Route::group(['middleware' => ['admin']], function () {
+            // REGISTER
+            Route::post('register/warehouse', [AuthController::class, 'registerWarehouseOfficer']);
+            Route::post('register/admin', [AuthController::class, 'registerAdmin']);
+        });
     });
-
-    // MARKETPLACE
-    Route::get('marketplace', [MarketplaceController::class, 'getAll']);
-
-    // LOGOUT
-    Route::post('logout', [AuthController::class, 'logout']);
-    Route::post('logoutall', [AuthController::class, 'logoutAll']);
-
-    // UPLOAD
-    Route::post('upload', [CloudinaryController::class, 'upload']);
 });
+
+Route::get('get-provinces', [RegionController::class, 'getProvinces']);
+Route::get('province/{provinceId}', [RegionController::class, 'getProvince']);
+Route::get('get-cities/{provinceId}', [RegionController::class, 'getCities']);
+Route::get('city/{cityId}', [RegionController::class, 'getCity']);
+Route::get('get-all-cities', [RegionController::class, 'getAllCities']);
+Route::get('get-districts/{cityId}', [RegionController::class, 'getDistricts']);
+Route::get('get-all-districts', [RegionController::class, 'getAllDistricts']);
+Route::get('district/{districtId}', [RegionController::class, 'getDistrict']);
+Route::get('get-villages/{districtId}', [RegionController::class, 'getVillages']);
+Route::get('village/{villageId}', [RegionController::class, 'getVillage']);
+Route::post('get-regions', [RegionController::class, 'getRegions']);
+Route::post('get-regions-paginate', [RegionController::class, 'getPaginateRegions']);

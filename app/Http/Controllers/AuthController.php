@@ -3,104 +3,85 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
+use App\Models\User;
+
 use App\Http\Library\ApiHelpers;
+use App\Http\Requests\UserRequest;
+
+use App\Interfaces\UserRepositoryInterface;
 
 class AuthController extends Controller
 {
     use ApiHelpers;
+    private UserRepositoryInterface $userRepository;
+    public function __construct(UserRepositoryInterface $userRepository)
+    {
+        $this->userRepository = $userRepository;
+    }
 
     /**
      * register admin
      */
-    public function registerAdmin(Request $request) : JsonResponse
+    public function registerAdmin(UserRequest $request) : JsonResponse
     {
-        $validator = Validator::make($request->all(),[
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8'
+        $validated = $request->validated();
+
+        $user = $this->userRepository->create([
+            'name' => $validated['name'],
+            'email' => $validated->email,
+            'password' => Hash::make($validated->password),
+            'role_id' => 1
         ]);
 
-        if ($validator->fails()) {
-            return $this->onError($validator->errors()->first(), 400);
-        }
+        $token = $user->createToken(env('HASH_TOKEN'), ['admin'])->plainTextToken;
 
-        if ($this->isAdmin($request->user())) {
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
-                'role_id' => 1
-            ]);
+        $result = [
+            'user' => $user,
+            'access_token' => $token
+        ];
 
-            $token = $user->createToken(env('HASH_TOKEN'), ['admin'])->plainTextToken;
-
-            $result = [
-                'user' => $user,
-                'access_token' => $token
-            ];
-            return $this->onSuccess($result, 'Admin registered');
-        }
-        return $this->onError('Unauthorized', 401);
+        return $this->onSuccess($result, 'Admin registered');
     }
 
     /**
      * register warehouse officer
      */
-    public function registerWarehouseOfficer(Request $request) : JsonResponse
+    public function registerWarehouseOfficer(UserRequest $request) : JsonResponse
     {
-        $validator = Validator::make($request->all(),[
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8'
+        $validated = $request->validated();
+
+        $user = $this->userRepository->create([
+            'name' => $validated['name'],
+            'email' => $validated->email,
+            'password' => Hash::make($validated->password),
+            'role_id' => 2
         ]);
 
-        if ($validator->fails()){
-            return $this->onError($validator->errors()->first(), 400);
-        }
-        if ($this->isAdmin($request->user())) {
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
-                'role_id' => 2
-            ]);
-
-            $token = $user->createToken(env('HASH_TOKEN'), ['warehouse_officer'])->plainTextToken;
-            $result = [
-                'user' => $user,
-                'access_token' => $token
-            ];
-            return $this->onSuccess($result, 'Warehouse officer registered');
-        }
-        return $this->onError('Unauthorized', 401);
+        $token = $user->createToken(env('HASH_TOKEN'), ['warehouse_officer'])->plainTextToken;
+        $result = [
+            'user' => $user,
+            'access_token' => $token
+        ];
+        return $this->onSuccess($result, 'Warehouse officer registered');
     }
 
     /**
      * register dropshipper
      */
-    public function registerDropshipper(Request $request) : JsonResponse
+    public function registerDropshipper(UserRequest $request) : JsonResponse
     {
-        $validator = Validator::make($request->all(),[
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8'
-        ]);
+        $validated = $request->validated();
 
-        if ($validator->fails()){
-            return $this->onError($validator->errors()->first(), 400);
-        }
-
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+        $user = $this->userRepository->create([
+            'name' => $validated['name'],
+            'email' => $validated->email,
+            'password' => Hash::make($validated->password),
             'role_id' => 3
         ]);
 
