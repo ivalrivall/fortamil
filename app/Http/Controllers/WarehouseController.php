@@ -27,7 +27,8 @@ class WarehouseController extends Controller
 
     public function paginate(BasePaginateRequest $request) : JsonResponse
     {
-        $warehouse = $this->warehouse->paginate($request);
+        $validated = $request->validated();
+        $warehouse = $this->warehouse->paginate($request->merge($validated));
         return $this->onSuccess($warehouse);
     }
 

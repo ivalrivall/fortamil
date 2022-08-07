@@ -56,6 +56,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::group(['middleware' => ['dropshipper']], function () {
             // STORE
             Route::post('store', [StoreController::class, 'create']);
+            Route::get('store/paginate', [StoreController::class, 'paginate']);
         });
 
         Route::group(['middleware' => ['admin']], function () {
