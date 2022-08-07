@@ -16,4 +16,12 @@ class Store extends Model
     {
         return $this->morphMany(Address::class, 'addressable');
     }
+
+    /**
+     * Get the user's most recent image.
+     */
+    public function latestAddress()
+    {
+        return $this->morphOne(Address::class, 'addressable')->latestOfMany();
+    }
 }

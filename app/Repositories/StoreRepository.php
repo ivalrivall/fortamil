@@ -22,4 +22,14 @@ class StoreRepository extends BaseRepository implements StoreRepositoryInterface
     {
         $this->model = $model;
     }
+
+    public function paginate($request)
+    {
+        $per_page = $request->per_page;
+        $store = $this->model->where('user_id', $request->user()->id);
+        if (!$request->per_page) {
+            $per_page = 10;
+        }
+        return $store->simplePaginate($per_page);
+    }
 }
