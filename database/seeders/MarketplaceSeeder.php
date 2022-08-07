@@ -18,23 +18,28 @@ class MarketplaceSeeder extends Seeder
         DB::table('marketplaces')->insert([
             [
                 'name' => 'Tokopedia',
-                'slug' => 'tokopedia'
+                'slug' => 'tokopedia',
+                'picture' => config('app.url').'/assets/images/tokopedia.jpg'
             ],
             [
                 'name' => 'Bukalapak',
-                'slug' => 'bukalapak'
+                'slug' => 'bukalapak',
+                'picture' => config('app.url').'/assets/images/bukalapak.png'
             ],
             [
                 'name' => 'Shopee',
-                'email' => 'shopee'
+                'email' => 'shopee',
+                'picture' => config('app.url').'/assets/images/shopee.jpg'
             ],
             [
                 'name' => 'Lazada',
-                'email' => 'lazada'
+                'email' => 'lazada',
+                'picture' => config('app.url').'/assets/images/lazada.png'
             ],
             [
                 'name' => 'Blibli',
-                'email' => 'blibli'
+                'email' => 'blibli',
+                'picture' => config('app.url').'/assets/images/blibli.png'
             ]
         ]);
     }
