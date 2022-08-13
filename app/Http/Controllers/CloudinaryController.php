@@ -2,15 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
+use App\Http\Library\ApiHelpers;
 // use Cloudinary\Configuration\Configuration;
 // use Cloudinary\Api\Upload\UploadApi;
 // use Cloudinary\Cloudinary;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
-use App\Http\Library\ApiHelpers;
-
-
+use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 class CloudinaryController extends Controller
 {
     use ApiHelpers;

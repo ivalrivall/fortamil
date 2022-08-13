@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\JsonResponse;
-
 use App\Http\Library\ApiHelpers;
 use App\Http\Requests\BasePaginateRequest;
 use App\Http\Requests\StoreCreateRequest;
@@ -11,7 +9,7 @@ use App\Interfaces\AddressRepositoryInterface;
 use App\Interfaces\CloudinaryRepositoryInterface;
 use App\Interfaces\StoreRepositoryInterface;
 use App\Models\Address;
-
+use Illuminate\Http\JsonResponse;
 class StoreController extends Controller
 {
     use ApiHelpers;

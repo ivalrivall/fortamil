@@ -48,4 +48,19 @@ class User extends Authenticatable
     {
         return $this->morphMany(Address::class, 'addressable');
     }
+
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class);
+    }
+
+    public function customers()
+    {
+        return $this->hasMany(Customer::class);
+    }
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
 }

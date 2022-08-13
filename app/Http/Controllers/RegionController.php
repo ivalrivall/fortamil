@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Interfaces\RegionRepositoryInterface;
-use Illuminate\Http\Request;
-use Exception;
 use App\Http\Library\ApiHelpers;
-
+use App\Interfaces\RegionRepositoryInterface;
+use Exception;
+use Illuminate\Http\Request;
 class RegionController extends Controller
 {
     use ApiHelpers;

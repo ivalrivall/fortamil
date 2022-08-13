@@ -2,20 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Library\ApiHelpers;
+use App\Http\Requests\UserRequest;
+use App\Interfaces\UserRepositoryInterface;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
-
-use App\Models\User;
-
-use App\Http\Library\ApiHelpers;
-use App\Http\Requests\UserRequest;
-
-use App\Interfaces\UserRepositoryInterface;
-
 class AuthController extends Controller
 {
     use ApiHelpers;

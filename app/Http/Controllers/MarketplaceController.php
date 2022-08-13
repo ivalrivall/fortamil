@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Library\ApiHelpers;
+use App\Models\Marketplace;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-
-use App\Http\Library\ApiHelpers;
-
-use App\Models\Marketplace;
 
 use Cloudinary\Configuration\Configuration;
 

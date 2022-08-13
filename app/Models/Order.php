@@ -14,4 +14,19 @@ class Order extends Model
     {
         return $this->belongsTo(Store::class);
     }
+
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class);
+    }
+
+    public function products()
+    {
+        return $this->belongsToMany(Product::class, 'order_products', 'order_id', 'product_id');
+    }
+
+    public function trackings()
+    {
+        return $this->hasMany(Tracking::class);
+    }
 }
