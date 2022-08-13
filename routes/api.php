@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CloudinaryController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\MarketplaceController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RegionController;
@@ -48,6 +49,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('/profile', function(Request $request) {
             return auth()->user();
         });
+
+        // CUSTOMER
+        Route::post('customer-with-address', [CustomerController::class, 'createWithAddress']);
 
         // WAREHOUSE
         Route::get('warehouse/paginate', [WarehouseController::class, 'paginate']);

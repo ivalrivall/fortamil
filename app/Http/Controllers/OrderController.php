@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Library\ApiHelpers;
 use App\Http\Requests\OrderCreateRequest;
+use App\Interfaces\CustomerRepositoryInterface;
 use App\Interfaces\OrderRepositoryInterface;
+use App\Repositories\CustomerRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -12,10 +14,15 @@ class OrderController extends Controller
 {
     use ApiHelpers;
     private OrderRepositoryInterface $order;
+    private CustomerRepository $customer;
 
-    public function __construct(OrderRepositoryInterface $order)
+    public function __construct(
+        OrderRepositoryInterface $order,
+        CustomerRepositoryInterface $customer
+    )
     {
         $this->order = $order;
+        $this->customer = $customer;
     }
 
     /**
@@ -25,16 +32,23 @@ class OrderController extends Controller
     {
         $validated = $request->validated();
 
-        $slug = $this->createSlug($request->name);
+        $pictureUrl = $this->cloudinary->upload(['file' => $request->file('marketplace_picture_label')]);
 
-        $pictureUrl = $this->cloudinary->upload(['file' => $request->file('picture')]);
+        $order = $this->order->create([
+            'status' => 'success',
+            'store_id' => $validated['store_id'],
+            'number_resi' => $validated['number_resi'],
+            'marketplace_number_resi' => $validated['marketplace_number_resi'],
+            'slug' => $pictureUrl,
+            'user_id' => $request->user()->id
+        ]);
 
-        $store = $this->storeRepository->create([
-            'name' => $validated['name'],
-            'marketplace_id' => $validated['marketplace_id'],
-            'picture' => $pictureUrl,
-            'address' => $validated['address'],
-            'slug' => $slug,
+        $this->customer->create([
+            'status' => 'success',
+            'store_id' => $validated['store_id'],
+            'number_resi' => $validated['number_resi'],
+            'marketplace_number_resi' => $validated['marketplace_number_resi'],
+            'slug' => $pictureUrl,
             'user_id' => $request->user()->id
         ]);
 
