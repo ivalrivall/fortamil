@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Str;
-if (config('app.app_mode') == 'heroku') {
+if (config('app.db_mode') == 'uri') {
     $DATABASE_URL=parse_url(env('DATABASE_URL'));
 }
 
@@ -68,12 +68,12 @@ return [
 
         'pgsql' => [
             'driver' => 'pgsql',
-            'url' => config('app.app_mode') == 'heroku' ? env('DATABASE_URL') : '',
-            'host' => config('app.app_mode') == 'heroku' ? $DATABASE_URL['host'] : env('DB_HOST', '127.0.0.1'),
-            'port' => config('app.app_mode') == 'heroku' ? $DATABASE_URL['port'] : env('DB_PORT', '5432'),
-            'database' => config('app.app_mode') == 'heroku' ? ltrim($DATABASE_URL['path'], '/') : env('DB_DATABASE', 'forge'),
-            'username' => config('app.app_mode') == 'heroku' ? $DATABASE_URL['user'] : env('DB_USERNAME', 'forge'),
-            'password' => config('app.app_mode') == 'heroku' ? $DATABASE_URL['pass'] : env('DB_PASSWORD', ''),
+            'url' => config('app.db_mode') == 'uri' ? env('DATABASE_URL') : '',
+            'host' => config('app.db_mode') == 'uri' ? $DATABASE_URL['host'] : env('DB_HOST', '127.0.0.1'),
+            'port' => config('app.db_mode') == 'uri' ? $DATABASE_URL['port'] : env('DB_PORT', '5432'),
+            'database' => config('app.db_mode') == 'uri' ? ltrim($DATABASE_URL['path'], '/') : env('DB_DATABASE', 'forge'),
+            'username' => config('app.db_mode') == 'uri' ? $DATABASE_URL['user'] : env('DB_USERNAME', 'forge'),
+            'password' => config('app.db_mode') == 'uri' ? $DATABASE_URL['pass'] : env('DB_PASSWORD', ''),
             'charset' => 'utf8',
             'prefix' => '',
             'prefix_indexes' => true,
