@@ -1,0 +1,11 @@
+{
+  "apps": [
+    {
+      "app_id": "app_249e2a8a-f545-4af5-94a3-8102edebc36f",
+      "org_id": "user_37640b2f-ea8b-433f-8529-c9617909adce",
+      "deploy_url": "https://github.com/ivalrivall/fortamil.git",
+      "name": "fortamil",
+      "alias": "fortamil"
+    }
+  ]
+}
