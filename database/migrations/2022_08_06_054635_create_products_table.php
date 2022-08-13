@@ -18,8 +18,12 @@ return new class extends Migration
             $table->string('name');
             $table->string('sku');
             $table->longText('description');
-            $table->decimal('price', 11, 2);
+            $table->decimal('price_retail', 11, 2);
+            $table->decimal('price_grosir', 11, 2);
+            $table->decimal('price_modal', 11, 2);
+            $table->decimal('price_dropship', 11, 2);
             $table->integer('stock');
+            $table->decimal('weight');
             $table->unsignedBigInteger('store_id');
             $table->softDeletes();
             $table->timestamps();
