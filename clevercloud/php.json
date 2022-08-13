@@ -1,0 +1,5 @@
+{
+    "configuration": {
+        "pm.max_children": 10
+    }
+}
