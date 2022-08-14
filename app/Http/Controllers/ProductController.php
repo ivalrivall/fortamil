@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Library\ApiHelpers;
+use App\Http\Requests\CreateProductRequest;
+use App\Interfaces\CloudinaryRepositoryInterface;
+use App\Interfaces\PictureProductRepositoryInterface;
+use App\Interfaces\ProductRepositoryInterface;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -12,25 +16,50 @@ use Illuminate\Support\Facades\Validator;
 class ProductController extends Controller
 {
     use ApiHelpers;
+    private ProductRepositoryInterface $product;
+    private CloudinaryRepositoryInterface $cloudinary;
+    private PictureProductRepositoryInterface $pictureProduct;
 
-    public function create(Request $request): JsonResponse
+    public function __construct(
+        ProductRepositoryInterface $product,
+        CloudinaryRepositoryInterface $cloudinary,
+        PictureProductRepositoryInterface $pictureProduct
+    )
     {
-        $user = $request->user();
-        if ($this->isAdmin($user) || $this->isWriter($user)) {
-            $validator = Validator::make($request->all(), $this->productValidationRules());
-            if ($validator->passes()) {
-                $product = new Product();
-                $product->name = $request->name;
-                $product->sku = $request->sku;
-                $product->description = $request->description;
-                $product->price = $request->price;
-                $product->stock = $request->stock;
-                $product->store_id = $request->store_id;
-                $product->save();
+        $this->product = $product;
+        $this->cloudinary = $cloudinary;
+        $this->pictureProduct = $pictureProduct;
+    }
 
-                return $this->onSuccess($product, 'Product Created');
-            }
-            return $this->onError($validator->errors(), 400);
+    public function create(CreateProductRequest $request): JsonResponse
+    {
+        $validated = $request->validated();
+        $pictureUrl = [];
+        foreach ($request->pictures as $key => $value) {
+            $pictureUrl[] = $this->cloudinary->upload(['file' => $value]);
         }
+        $product = $this->product->addProduct([
+            'name' => $validated['name'],
+            'sku' => $validated['sku'],
+            'description' => $validated['description'],
+            'price_retail' => $validated['price_retail'],
+            'price_grosir' => $validated['price_grosir'],
+            'price_modal' => $validated['price_modal'],
+            'price_dropship' => $validated['price_dropship'],
+            'stock' => $validated['stock'],
+            'weight' => $validated['weight'],
+            'store_id' => $validated['store_id'],
+            'category_id' => $validated['category_id']
+        ]);
+        foreach ($pictureUrl as $key => $value) {
+            $this->pictureProduct->create([
+                'product_id' => $product->id,
+                'path' => $value,
+                'thumbnail_path' => $value,
+                'is_featured' => $key == 0 ? true : false
+            ]);
+        }
+        $product->pictures;
+        return $this->onSuccess($product, 'Product Created');
     }
 }

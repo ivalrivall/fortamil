@@ -27,25 +27,24 @@ class CustomerController extends Controller
     {
         $validated = $request->validated();
 
-        $customer = $this->customer->create([
+        $address = [
+            'is_primary' => false,
+            'title' => $validated['address_title'],
+            'recipient' => $validated['address_recipient_name'],
+            'phone_recipient' => $validated['address_recipient_phone'],
+            'city_id' => $validated['address_city_id'],
+            'district_id' => $validated['address_district_id'],
+            'province_id' => $validated['address_province_id'],
+            'village_id' => $validated['address_village_id'],
+            'postal_code' => $validated['address_postal_code']
+        ];
+
+        $customer = $this->customer->createWithAddress([
             'name' => $validated['name'],
             'phone' => $validated['phone'],
             'user_id' => $request->user()->id
-        ]);
+        ], $address);
 
-        $address = new Address();
-        $address->is_primary = false;
-        $address->title = $validated['address_title'];
-        $address->recipient = $validated['address_recipient_name'];
-        $address->phone_recipient = $validated['address_recipient_phone'];
-        $address->city_id = $validated['address_city_id'];
-        $address->district_id = $validated['address_district_id'];
-        $address->province_id = $validated['address_province_id'];
-        $address->village_id = $validated['address_village_id'];
-        $address->postal_code = $validated['address_postal_code'];
-
-        $customer->addresses()->save($address);
-        $customer->latestAddress;
         return $this->onSuccess($customer, 'Customer created');
     }
 }

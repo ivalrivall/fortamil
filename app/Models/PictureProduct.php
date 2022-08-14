@@ -11,6 +11,7 @@ class PictureProduct extends Model
     use HasFactory, SoftDeletes;
 
     protected $table = 'picture_products';
+    protected $guarded = [];
 
     public function product()
     {

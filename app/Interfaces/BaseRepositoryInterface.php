@@ -95,4 +95,13 @@ interface BaseRepositoryInterface
      * @return bool
      */
     public function permanentlyDeleteById(int $modelId): bool;
+
+    /**
+     * First or create.
+     *
+     * @param array $first
+     * @param array $create
+     * @return Model
+     */
+    public function firstOrCreate(array $first, array $create): ?Model;
 }

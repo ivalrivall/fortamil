@@ -4,4 +4,10 @@ namespace App\Interfaces;
 
 use App\Interfaces\BaseRepositoryInterface;
 
-interface CustomerRepositoryInterface extends BaseRepositoryInterface{}
+interface CustomerRepositoryInterface extends BaseRepositoryInterface
+{
+    /**
+     * create with address.
+     */
+    public function createWithAddress(array $customer, array $address);
+}

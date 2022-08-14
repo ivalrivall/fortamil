@@ -142,4 +142,22 @@ class BaseRepository implements BaseRepositoryInterface
     {
         return $this->findTrashedById($modelId)->forceDelete();
     }
+
+    /**
+     * First or create.
+     *
+     * @param array $payload
+     * @param array $create
+     * @return Model
+     */
+    public function firstOrCreate(array $first, array $create): ?Model
+    {
+        if (count($create) > 0) {
+            $model = $this->model->firstOrCreate($first, $create);
+        } else {
+            $model = $this->model->firstOrCreate($first);
+        };
+
+        return $model;
+    }
 }

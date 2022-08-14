@@ -32,39 +32,34 @@ class OrderController extends Controller
     {
         $validated = $request->validated();
 
+        $customer = $this->customer->createWithAddress([
+            'name' => 'name',
+            'phone' => $validated['phone'],
+            'user_id' => $request->user()->id
+        ], [
+            'is_primary' => false,
+            'title' => $validated['address_title'],
+            'recipient' => $validated['address_recipient'],
+            'phone_recipient' => $validated['address_phone_recipient'],
+            'city_id' => $validated['city_id'],
+            'district_id' => $validated['district_id'],
+            'province_id' => $validated['province_id'],
+            'village_id' => $validated['village_id'],
+            'postal_code' => $validated['postal_code']
+        ]);
+
         $pictureUrl = $this->cloudinary->upload(['file' => $request->file('marketplace_picture_label')]);
 
         $order = $this->order->create([
             'status' => 'success',
             'store_id' => $validated['store_id'],
+            'user_id' => $request->user()->id,
             'number_resi' => $validated['number_resi'],
             'marketplace_number_resi' => $validated['marketplace_number_resi'],
-            'slug' => $pictureUrl,
-            'user_id' => $request->user()->id
+            'marketplace_picture_label' => $pictureUrl,
+            'customer_id' => $customer->id
         ]);
 
-        $this->customer->create([
-            'status' => 'success',
-            'store_id' => $validated['store_id'],
-            'number_resi' => $validated['number_resi'],
-            'marketplace_number_resi' => $validated['marketplace_number_resi'],
-            'slug' => $pictureUrl,
-            'user_id' => $request->user()->id
-        ]);
-
-        $address = new Address;
-        $address->is_primary = false;
-        $address->title = $validated['address_title'];
-        $address->recipient = $validated['address_recipient'];
-        $address->phone_recipient = $validated['address_phone_recipient'];
-        $address->city_id = $validated['city_id'];
-        $address->district_id = $validated['district_id'];
-        $address->province_id = $validated['province_id'];
-        $address->village_id = $validated['village_id'];
-        $address->postal_code = $validated['postal_code'];
-
-        $store->addresses()->save($address);
-        $store->latestAddress;
-        return $this->onSuccess($store, 'Store created');
+        return $this->onSuccess($order, 'Order created');
     }
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CloudinaryController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\MarketplaceController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RegionController;
 use App\Http\Controllers\StoreController;
@@ -61,6 +62,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             // STORE
             Route::post('store', [StoreController::class, 'create']);
             Route::get('store/paginate', [StoreController::class, 'paginate']);
+
+            // ORDER
+            Route::post('order', [OrderController::class, 'create']);
         });
 
         Route::group(['middleware' => ['admin']], function () {
