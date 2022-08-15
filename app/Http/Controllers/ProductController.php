@@ -48,7 +48,7 @@ class ProductController extends Controller
             'price_dropship' => $validated['price_dropship'],
             'stock' => $validated['stock'],
             'weight' => $validated['weight'],
-            'store_id' => $validated['store_id'],
+            'warehouse_id' => $validated['warehouse_id'],
             'category_id' => $validated['category_id']
         ]);
         foreach ($pictureUrl as $key => $value) {

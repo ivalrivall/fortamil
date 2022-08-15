@@ -25,6 +25,7 @@ class OrderCreateRequest extends FormRequest
     {
         return [
             'store_id' => 'required|numeric',
+            'warehouse_id' => 'required|numeric',
             'marketplace_label_picture' => 'required|file',
             'marketplace_invoice_number' => 'required',
             'number_resi' => 'required|string',

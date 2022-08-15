@@ -16,4 +16,9 @@ class Warehouse extends Model
     {
         return $this->morphMany(Address::class, 'addressable');
     }
+
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
 }

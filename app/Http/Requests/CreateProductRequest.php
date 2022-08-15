@@ -33,7 +33,7 @@ class CreateProductRequest extends FormRequest
             'price_dropship' => 'required|numeric',
             'stock' => 'required|numeric',
             'weight' => 'required|numeric',
-            'store_id' => 'required|numeric',
+            'warehouse_id' => 'required|numeric',
             'pictures' => 'required|array',
             'category_id' => 'required|numeric'
         ];

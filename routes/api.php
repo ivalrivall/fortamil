@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\CloudinaryController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\MarketplaceController;
@@ -62,6 +63,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             // STORE
             Route::post('store', [StoreController::class, 'create']);
             Route::get('store/paginate', [StoreController::class, 'paginate']);
+
+            // CART
+            Route::post('cart/product', [CartController::class, 'addProduct']);
+            Route::delete('card/product/{id}', [CartController::class, 'removeProduct']);
 
             // ORDER
             Route::post('order', [OrderController::class, 'create']);
