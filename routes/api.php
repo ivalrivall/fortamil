@@ -70,6 +70,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
             // ORDER
             Route::post('order', [OrderController::class, 'create']);
+
+            // PRODUCT
+            Route::get('product/warehouse', [ProductController::class, 'getProductByWarehouse']);
         });
 
         Route::group(['middleware' => ['admin']], function () {

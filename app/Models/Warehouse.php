@@ -10,7 +10,7 @@ class Warehouse extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['name', 'address', 'picture'];
+    protected $fillable = ['name', 'address', 'picture', 'created_by'];
 
     public function addresses()
     {
@@ -19,6 +19,14 @@ class Warehouse extends Model
 
     public function products()
     {
-        return $this->hasMany(Product::class);
+        return $this->hasMany(Product::class, 'warehouse_id');
+    }
+
+    /**
+     * Get most recent address.
+     */
+    public function latestAddress()
+    {
+        return $this->morphOne(Address::class, 'addressable')->latestOfMany();
     }
 }

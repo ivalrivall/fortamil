@@ -7,6 +7,7 @@ use App\Http\Requests\BasePaginateRequest;
 use App\Http\Requests\WarehouseCreateRequest;
 use App\Interfaces\CloudinaryRepositoryInterface;
 use App\Interfaces\WarehouseRepositoryInterface;
+use App\Models\Address;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -42,8 +43,24 @@ class WarehouseController extends Controller
         $warehouse = $this->warehouse->create([
             'name' => $validated['name'],
             'picture' => $pictureUrl,
-            'address' => $validated['address']
+            'address' => $validated['address'],
+            'created_by' => $request->user()->id
         ]);
+
+        $address = new Address();
+        $address->is_primary = false;
+        $address->title = $validated['address_title'];
+        $address->recipient = $validated['address_recipient'];
+        $address->phone_recipient = $validated['address_phone_recipient'];
+        $address->city_id = $validated['city_id'];
+        $address->district_id = $validated['district_id'];
+        $address->province_id = $validated['province_id'];
+        $address->village_id = $validated['village_id'];
+        $address->postal_code = $validated['postal_code'];
+
+        $warehouse->addresses()->save($address);
+        $warehouse->latestAddress;
+
         return $this->onSuccess($warehouse);
     }
 

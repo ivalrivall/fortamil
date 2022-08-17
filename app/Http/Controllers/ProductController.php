@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Library\ApiHelpers;
 use App\Http\Requests\CreateProductRequest;
+use App\Http\Requests\GetProductByWarehouseRequest;
 use App\Interfaces\CloudinaryRepositoryInterface;
 use App\Interfaces\PictureProductRepositoryInterface;
 use App\Interfaces\ProductRepositoryInterface;
+use App\Interfaces\WarehouseRepositoryInterface;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -19,16 +21,19 @@ class ProductController extends Controller
     private ProductRepositoryInterface $product;
     private CloudinaryRepositoryInterface $cloudinary;
     private PictureProductRepositoryInterface $pictureProduct;
+    private WarehouseRepositoryInterface $warehouse;
 
     public function __construct(
         ProductRepositoryInterface $product,
         CloudinaryRepositoryInterface $cloudinary,
-        PictureProductRepositoryInterface $pictureProduct
+        PictureProductRepositoryInterface $pictureProduct,
+        WarehouseRepositoryInterface $warehouse
     )
     {
         $this->product = $product;
         $this->cloudinary = $cloudinary;
         $this->pictureProduct = $pictureProduct;
+        $this->warehouse = $warehouse;
     }
 
     public function create(CreateProductRequest $request): JsonResponse
@@ -60,6 +65,13 @@ class ProductController extends Controller
             ]);
         }
         $product->pictures;
-        return $this->onSuccess($product, 'Product Created');
+        return $this->onSuccess($product, 'Product created');
+    }
+
+    public function getProductByWarehouse(GetProductByWarehouseRequest $request): JsonResponse
+    {
+        $validated = $request->validated();
+        $productByWarehouse = $this->warehouse->findById($validated['warehouse_id'], ['*'], ['products']);
+        return $this->onSuccess($productByWarehouse->products, 'Success get product');
     }
 }

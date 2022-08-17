@@ -18,7 +18,7 @@ class Store extends Model
     }
 
     /**
-     * Get the user's most recent address.
+     * Get most recent address.
      */
     public function latestAddress()
     {

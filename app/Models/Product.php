@@ -27,7 +27,7 @@ class Product extends Model
 
     public function warehouse()
     {
-        return $this->belongsTo(Warehouse::class);
+        return $this->belongsTo(Warehouse::class, 'product_id');
     }
 
     public function carts()

@@ -26,7 +26,15 @@ class WarehouseCreateRequest extends FormRequest
         return [
             'name' => 'nullable|string',
             'picture' => 'required|file',
-            'address' => 'required|string'
+            'address' => 'required|string',
+            'address_title' => 'required|string',
+            'address_recipient' => 'required|string',
+            'address_phone_recipient' => 'required|string',
+            'city_id' => 'required|string',
+            'district_id' => 'required|string',
+            'province_id' => 'required|string',
+            'village_id' => 'required|string',
+            'postal_code' => 'required|string'
         ];
     }
 }
