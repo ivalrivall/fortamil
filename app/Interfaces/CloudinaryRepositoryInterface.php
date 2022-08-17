@@ -2,9 +2,7 @@
 
 namespace App\Interfaces;
 
-use App\Interfaces\BaseRepositoryInterface;
-
-interface CloudinaryRepositoryInterface extends BaseRepositoryInterface
+interface CloudinaryRepositoryInterface
 {
     public function upload(array $payload): string;
 }

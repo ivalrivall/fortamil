@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Interfaces\ProductRepositoryInterface;
+use App\Models\PictureProduct;
 use App\Models\Product;
 use App\Repositories\BaseRepository;
 use Illuminate\Database\Eloquent\Model;
@@ -22,10 +23,16 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
     public function __construct(Product $model)
     {
         $this->model = $model;
+        $this->pictureProduct = new PictureProductRepository(new PictureProduct());
+        $this->cloudinary = new CloudinaryRepository;
     }
 
     public function addProduct($data): ?Model
     {
+        $pictureUrl = [];
+        foreach ($data['pictures'] as $key => $value) {
+            $pictureUrl[] = $this->cloudinary->upload(['file' => $value]);
+        }
         $product = $this->create([
             'name' => $data['name'],
             'sku' => $data['sku'],
@@ -36,9 +43,17 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
             'price_dropship' => $data['price_dropship'],
             'stock' => $data['stock'],
             'weight' => $data['weight'],
-            'store_id' => $data['store_id'],
+            'warehouse_id' => $data['warehouse_id'],
             'category_id' => $data['category_id']
         ]);
+        foreach ($pictureUrl as $key => $value) {
+            $this->pictureProduct->create([
+                'product_id' => $product->id,
+                'path' => $value,
+                'thumbnail_path' => $value,
+                'is_featured' => $key == 0 ? true : false
+            ]);
+        }
         return $product;
     }
 
