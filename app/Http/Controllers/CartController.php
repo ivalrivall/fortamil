@@ -3,12 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Library\ApiHelpers;
-use App\Http\Requests\AddProductToCartRequest;
+use App\Http\Requests\Cart\AddProductToCartRequest;
 use App\Interfaces\CartRepositoryInterface;
 use App\Interfaces\ProductRepositoryInterface;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class CartController extends Controller
 {
@@ -32,15 +33,11 @@ class CartController extends Controller
     public function addProduct(AddProductToCartRequest $request): JsonResponse
     {
         $valid = $request->validated();
-        $isAvailable = $this->product->checkStockIsAvailable($valid['product_id'], $valid['quantity']);
-        if (!$isAvailable) {
-            return $this->onError('Stock of product not available');
+        try {
+            $cart = $this->cart->addProduct($valid['product_id'], $valid['quantity'], $request->user()->id);
+        } catch (Exception $th) {
+            return $this->onError($th->getMessage());
         }
-        $cart = $this->cart->create([
-            'product_id' => $valid['product_id'],
-            'quantity' => $valid['quantity'],
-            'user_id' => $request->user()->id
-        ]);
         return $this->onSuccess($cart, 'Success add product to cart');
     }
 
@@ -61,17 +58,22 @@ class CartController extends Controller
     {
         $valid = $request->validate(['cart_id' => 'required|integer', 'quantity' => 'required|integer'], $request->all());
         try {
-            $cart = $this->cart->findById($valid['cart_id']);
+            $this->cart->editQuantity($valid['cart_id'], $valid['quantity']);
         } catch (Exception $th) {
-            return $this->onError('Cart not found');
+            return $this->onError($th->getMessage());
         }
-        $isAvailable = $this->product->checkStockIsAvailable($cart->product_id, $valid['quantity']);
-        if (!$isAvailable) {
-            return $this->onError('Stock of product not available');
-        }
-        $this->cart->update($valid['cart_id'], [
-            'quantity' => $valid['quantity']
-        ]);
         return $this->onSuccess(null, 'Success edit quantity');
+    }
+
+    public function emptyCart(Request $request): JsonResponse
+    {
+        try {
+            $user = $this->cart->emptyCart($request->user()->id);
+        } catch (Exception $th) {
+            Log::error($th);
+            return $this->onError($th->getMessage());
+        }
+
+        return $this->onSuccess(null, 'Success empty cart');
     }
 }

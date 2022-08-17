@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Library\ApiHelpers;
 use App\Http\Requests\BasePaginateRequest;
-use App\Http\Requests\StoreCreateRequest;
+use App\Http\Requests\Store\StoreCreateRequest;
 use App\Interfaces\AddressRepositoryInterface;
 use App\Interfaces\CloudinaryRepositoryInterface;
 use App\Interfaces\StoreRepositoryInterface;

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Library\ApiHelpers;
-use App\Http\Requests\OrderCreateRequest;
+use App\Http\Requests\Order\OrderCreateRequest;
 use App\Interfaces\CustomerRepositoryInterface;
 use App\Interfaces\OrderRepositoryInterface;
 use App\Repositories\CustomerRepository;

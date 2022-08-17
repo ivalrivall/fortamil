@@ -11,6 +11,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RegionController;
 use App\Http\Controllers\StoreController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\WarehouseController;
 
 /*
@@ -68,6 +69,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::post('cart/product', [CartController::class, 'addProduct']);
             Route::delete('cart/product', [CartController::class, 'removeProduct']);
             Route::post('cart/quantity', [CartController::class, 'editQuantity']);
+            Route::get('cart/empty', [CartController::class, 'emptyCart']);
+            Route::get('user/carts', [UserController::class, 'getCarts']);
 
             // ORDER
             Route::post('order', [OrderController::class, 'create']);

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Library\ApiHelpers;
-use App\Http\Requests\CreateProductRequest;
-use App\Http\Requests\GetProductByWarehouseRequest;
+use App\Http\Requests\Product\GetProductByWarehouseRequest;
+use App\Http\Requests\Product\CreateProductRequest;
 use App\Interfaces\CloudinaryRepositoryInterface;
 use App\Interfaces\PictureProductRepositoryInterface;
 use App\Interfaces\ProductRepositoryInterface;
