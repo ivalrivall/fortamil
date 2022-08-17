@@ -41,4 +41,16 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
         ]);
         return $product;
     }
+
+    public function checkStockIsAvailable(int $productId, int $quantity): bool
+    {
+        $product = $this->findById($productId);
+        if ($product) {
+            $stock = $product->stock;
+            if ($quantity > $stock) {
+                return false;
+            }
+            return true;
+        }
+    }
 }

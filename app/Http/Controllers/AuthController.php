@@ -101,7 +101,7 @@ class AuthController extends Controller
 
         $user = User::where('email', $request['email'])->firstOrFail();
         if (!$user) {
-            return $this->onError('Failed login', 400);
+            return $this->onError('Failed login');
         }
         $token = $user->createToken(env('HASH_TOKEN'))->plainTextToken;
         $result = [

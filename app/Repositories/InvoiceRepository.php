@@ -2,11 +2,11 @@
 
 namespace App\Repositories;
 
-use App\Interfaces\CartRepositoryInterface;
-use App\Models\Cart;
+use App\Interfaces\InvoiceRepositoryInterface;
+use App\Models\Invoice;
 use App\Repositories\BaseRepository;
 
-class CartRepository extends BaseRepository implements CartRepositoryInterface
+class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInterface
 {
     /**
      * @var Model
@@ -18,7 +18,7 @@ class CartRepository extends BaseRepository implements CartRepositoryInterface
      *
      * @param Model $model
      */
-    public function __construct(Cart $model)
+    public function __construct(Invoice $model)
     {
         $this->model = $model;
     }
