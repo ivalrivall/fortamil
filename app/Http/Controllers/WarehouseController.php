@@ -64,4 +64,14 @@ class WarehouseController extends Controller
         return $this->onSuccess($warehouse);
     }
 
+    /**
+     * get product paginate
+     */
+    public function getProductByWarehousePaginate(BasePaginateRequest $request, $warehouseId): JsonResponse
+    {
+        $validated = $request->validated();
+        $product = $this->warehouse->getProductPaginate($request->merge($validated), $warehouseId);
+        return $this->onSuccess($product);
+    }
+
 }

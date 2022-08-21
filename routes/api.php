@@ -59,6 +59,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         // WAREHOUSE
         Route::get('warehouse/paginate', [WarehouseController::class, 'paginate']);
         Route::post('warehouse', [WarehouseController::class, 'create']);
+        Route::get('warehouse/{warehouseId}/product', [WarehouseController::class, 'getProductByWarehousePaginate']);
 
         Route::group(['middleware' => ['dropshipper']], function () {
             // STORE
