@@ -9,6 +9,8 @@ class PaymentMethod extends Model
 {
     use HasFactory;
 
+    protected $hidden = ['created_at', 'deleted_at', 'updated_at'];
+
     public function payment()
     {
         return $this->hasOne(Payment::class);

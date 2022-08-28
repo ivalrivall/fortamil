@@ -15,6 +15,7 @@ class PaymentMethodSeeder extends Seeder
      */
     public function run()
     {
+        DB::table('payment_methods')->truncate();
         DB::table('payment_methods')->insert([
             [
                 'name' => 'Tempo',
