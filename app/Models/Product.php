@@ -13,7 +13,7 @@ class Product extends Model
 
     protected $guarded = [];
 
-     /**
+    /**
      * Scope a query to only exclude specific Columns.
      *
      * @author Manojkiran.A <manojkiran10031998@gmail.com>
