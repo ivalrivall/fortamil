@@ -5,7 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-
+/**
+ * status: new, on-progress, cancel, done, return
+ */
 class Order extends Model
 {
     use HasFactory, SoftDeletes;
