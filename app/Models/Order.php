@@ -6,11 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 /**
- * status: new, on-progress, cancel, done, return
+ * @param status: waiting, on-progress, deliver, arrived, success, failed, cancel, complaint, return
  */
 class Order extends Model
 {
     use HasFactory, SoftDeletes;
+
+    protected $guarded = ['deleted_at'];
 
     public function store()
     {
@@ -30,5 +32,10 @@ class Order extends Model
     public function trackings()
     {
         return $this->hasMany(Tracking::class);
+    }
+
+    public function note()
+    {
+        return $this->morphOne(Note::class, 'notable');
     }
 }

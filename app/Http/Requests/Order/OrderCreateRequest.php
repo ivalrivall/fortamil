@@ -26,8 +26,8 @@ class OrderCreateRequest extends FormRequest
         return [
             'store_id' => 'required|numeric',
             'warehouse_id' => 'required|numeric',
-            'marketplace_label_picture' => 'required|file',
-            'marketplace_invoice_number' => 'required',
+            'marketplace_picture_label' => 'required|file',
+            'marketplace_number_invoice' => 'required',
             'number_resi' => 'required|string',
             'customer_name' => 'required|string',
             'customer_phone' => 'required|numeric',
@@ -37,7 +37,8 @@ class OrderCreateRequest extends FormRequest
             'customer_village_id' => 'required|numeric',
             'customer_postal_code' => 'required|numeric',
             'customer_recipient_name' => 'required|string',
-            'customer_recipient_phone' => 'required|numeric'
+            'customer_recipient_phone' => 'required|numeric',
+            'notes' => 'present|string|nullable'
         ];
     }
 }
