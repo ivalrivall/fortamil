@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Library\ApiHelpers;
+use App\Http\Requests\User\UserLoginRequest;
 use App\Http\Requests\User\UserRequest;
 use App\Interfaces\UserRepositoryInterface;
 use App\Models\User;
@@ -30,9 +31,10 @@ class AuthController extends Controller
 
         $user = $this->userRepository->create([
             'name' => $validated['name'],
-            'email' => $validated->email,
+            'email' => $validated['email'],
             'password' => Hash::make($validated->password),
-            'role_id' => 1
+            'role_id' => 1,
+            'fcm_token' => $validated['fcm_token']
         ]);
 
         $token = $user->createToken(env('HASH_TOKEN'), ['admin'])->plainTextToken;
@@ -54,9 +56,10 @@ class AuthController extends Controller
 
         $user = $this->userRepository->create([
             'name' => $validated['name'],
-            'email' => $validated->email,
+            'email' => $validated['email'],
             'password' => Hash::make($validated->password),
-            'role_id' => 2
+            'role_id' => 2,
+            'fcm_token' => $validated['fcm_token']
         ]);
 
         $token = $user->createToken(env('HASH_TOKEN'), ['warehouse_officer'])->plainTextToken;
@@ -78,7 +81,8 @@ class AuthController extends Controller
             'name' => $validated['name'],
             'email' => $validated->email,
             'password' => Hash::make($validated->password),
-            'role_id' => 3
+            'role_id' => 3,
+            'fcm_token' => $validated['fcm_token']
         ]);
 
         $token = $user->createToken(env('HASH_TOKEN'), ['dropshipper'])->plainTextToken;
@@ -92,17 +96,22 @@ class AuthController extends Controller
     /**
      * login.
      */
-    public function login(Request $request) : JsonResponse
+    public function login(UserLoginRequest $request) : JsonResponse
     {
+        $validated = $request->validated();
+
         if (!Auth::attempt($request->only('email', 'password')))
         {
             return $this->onError('Unauthorized', 401);
         }
 
-        $user = User::where('email', $request['email'])->firstOrFail();
+        $user = User::where('email', $validated['email'])->firstOrFail();
         if (!$user) {
             return $this->onError('Failed login');
         }
+        $user->update([
+            'fcm_token' => $validated['fcm_token']
+        ]);
         $token = $user->createToken(env('HASH_TOKEN'))->plainTextToken;
         $result = [
             'user' => $user,
