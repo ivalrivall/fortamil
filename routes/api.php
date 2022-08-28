@@ -7,7 +7,9 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CloudinaryController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\MarketplaceController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RegionController;
 use App\Http\Controllers\StoreController;
@@ -60,6 +62,15 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('warehouse/paginate', [WarehouseController::class, 'paginate']);
         Route::post('warehouse', [WarehouseController::class, 'create']);
         Route::get('warehouse/{warehouseId}/product', [WarehouseController::class, 'getProductByWarehousePaginate']);
+
+        // NOTIFICATION
+        Route::post('notif/{userId}/paginate', [NotificationController::class, 'paginateUserNotif']);
+        Route::get('notif/read-all', [NotificationController::class, 'readAll']);
+        Route::get('notif/{notifId}/read', [NotificationController::class, 'markRead']);
+        Route::get('notif/{notifId}/unread', [NotificationController::class, 'markUnread']);
+
+        // PAYMENT METHOD
+        Route::get('payment-method', [PaymentMethodController::class, 'getAll']);
 
         Route::group(['middleware' => ['dropshipper']], function () {
             // STORE
