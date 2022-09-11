@@ -89,7 +89,17 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
             $data = $data->where(function($q) use ($s) {
                 $q->where('status', 'ilike', "%$s%")
                 ->orWhere('number_resi', 'ilike', "%$s%")
-                ->orWhere('marketplace_number_invoice', 'ilike', "%$s%");
+                ->orWhere('marketplace_number_invoice', 'ilike', "%$s%")
+                ->orWhereHas('store', function($x) use ($s) {
+                    $x->where('name', 'ilike', "%$s%")->orWhereHas('marketplace', function($xx) use ($s) {
+                        $xx->where('name', 'ilike', "%$s%");
+                    });
+                })->orWhereHas('customer', function($x) use ($s) {
+                    $x->where(function($xx) use ($s) {
+                        $xx->where('name', 'ilike', "%$s%")
+                        ->orWhere('phone', 'ilike', "%$s%");
+                    });
+                });
             });
         }
 
