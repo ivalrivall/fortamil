@@ -1,6 +1,5 @@
 #!/bin/bash -l
-# set -euo pipefail
+set -euo pipefail
 
-# pushd "$APP_HOME"
-cd ${APP_HOME} # Which has been loaded by the env.
+pushd "$APP_HOME"
 php artisan schedule:run >> /dev/null 2>&1
