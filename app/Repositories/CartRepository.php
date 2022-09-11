@@ -32,6 +32,8 @@ class CartRepository extends BaseRepository implements CartRepositoryInterface
 
     /**
      * edit quantity
+     * @param int $cartId
+     * @param int $quantity
      */
     public function editQuantity(int $cartId, int $quantity)
     {
