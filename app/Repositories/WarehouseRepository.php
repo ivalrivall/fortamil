@@ -13,16 +13,17 @@ class WarehouseRepository extends BaseRepository implements WarehouseRepositoryI
      * @var Model
      */
     protected $model;
+    protected $product;
 
     /**
      * BaseRepository constructor.
      *
      * @param Model $model
      */
-    public function __construct(Warehouse $model)
+    public function __construct(Warehouse $model, Product $product)
     {
         $this->model = $model;
-        $this->product = new Product();
+        $this->product = $product;
     }
 
     /**

@@ -11,6 +11,8 @@ class Address extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $table = 'addresses';
+
     protected $hidden = ['deleted_at','created_at'];
 
     /**
