@@ -199,6 +199,7 @@ return [
     /**
      * CUSTOM
      */
-    'db_mode' => env('DB_MODE', 'normal')
+    'db_mode' => env('DB_MODE', 'normal'),
+    'log' => env('APP_LOG')
 
 ];
