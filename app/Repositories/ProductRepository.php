@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Interfaces\PictureProductRepositoryInterface;
 use App\Interfaces\ProductRepositoryInterface;
 use App\Models\PictureProduct;
 use App\Models\Product;
@@ -14,16 +15,17 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
      * @var Model
      */
     protected $model;
+    protected $pictureProduct;
 
     /**
      * BaseRepository constructor.
      *
      * @param Model $model
      */
-    public function __construct(Product $model)
+    public function __construct(Product $model, PictureProductRepositoryInterface $pictureProduct)
     {
         $this->model = $model;
-        $this->pictureProduct = new PictureProductRepository(new PictureProduct());
+        $this->pictureProduct = $pictureProduct;
         $this->cloudinary = new CloudinaryRepository;
     }
 

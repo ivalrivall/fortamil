@@ -2,11 +2,11 @@
 
 namespace App\Repositories;
 
-use App\Interfaces\OrderRepositoryInterface;
+use App\Interfaces\DefaultRepositoryInterface;
 use App\Models\Order;
 use App\Repositories\BaseRepository;
 
-class DefaultRepository extends BaseRepository implements OrderRepositoryInterface
+class DefaultRepository extends BaseRepository implements DefaultRepositoryInterface
 {
     /**
      * @var Model

@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Interfaces\CartRepositoryInterface;
 use App\Interfaces\ProductRepositoryInterface;
+use App\Interfaces\UserRepositoryInterface;
 use App\Models\Cart;
 use App\Models\Product;
 use App\Models\User;
@@ -17,17 +18,19 @@ class CartRepository extends BaseRepository implements CartRepositoryInterface
      * @var Model
      */
     protected $model;
+    protected $product;
+    protected $user;
 
     /**
      * BaseRepository constructor.
      *
      * @param Model $model
      */
-    public function __construct(Cart $model)
+    public function __construct(Cart $model, ProductRepositoryInterface $product, UserRepositoryInterface $user)
     {
         $this->model = $model;
-        $this->product = new ProductRepository(new Product());
-        $this->user = new UserRepository(new User());
+        $this->product = $product;
+        $this->user = $user;
     }
 
     /**
