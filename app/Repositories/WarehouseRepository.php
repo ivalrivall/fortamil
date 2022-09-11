@@ -43,7 +43,7 @@ class WarehouseRepository extends BaseRepository implements WarehouseRepositoryI
             $q->select('id','name','meta');
         }, 'addresses.village' => function ($q) {
             $q->select('id','name','meta');
-        }])->exclude(['created_by','created_at']);
+        }]);
 
         if ($sort) {
             $sort = explode('|', $sort);
@@ -75,7 +75,6 @@ class WarehouseRepository extends BaseRepository implements WarehouseRepositoryI
         $search = $request->search;
 
         $data = $this->product
-            ->exclude(['deleted_at','created_at','updated_at','warehouse_id'])
             ->where('warehouse_id', $warehouseId)
             ->with(['category' => function ($q) {
                 $q->select('id','name','slug','picture');

@@ -68,7 +68,6 @@ class NotificationRepository extends BaseRepository implements NotificationRepos
         $search = $request->search;
 
         $data = $this->model
-            ->exclude(['deleted_at','created_at','user_id'])
             ->where('user_id', $userId);
 
         if ($search) {

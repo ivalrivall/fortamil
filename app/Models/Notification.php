@@ -10,38 +10,7 @@ class Notification extends Model
 {
     use HasFactory;
 
-    /**
-     * Scope a query to only exclude specific Columns.
-     *
-     * @author Manojkiran.A <manojkiran10031998@gmail.com>
-     * @param  \Illuminate\Database\Eloquent\Builder $query
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public function scopeExclude($query, ...$columns)
-    {
-        if ($columns !== []) {
-            if (count($columns) !== count($columns, COUNT_RECURSIVE)) {
-                $columns = iterator_to_array(new \RecursiveIteratorIterator(new \RecursiveArrayIterator($columns)));
-            }
-            return $query->select(array_diff($this->getTableColumns(), $columns));
-        }
-        return $query;
-    }
-
-    /**
-     * Shows All the columns of the Corresponding Table of Model
-     *
-     * @author Manojkiran.A <manojkiran10031998@gmail.com>
-     * If You need to get all the Columns of the Model Table.
-     * Useful while including the columns in search
-     * @return array
-     **/
-    public function getTableColumns()
-    {
-        return Cache::rememberForever('MigrMod:' . filemtime(database_path('migrations')), function () {
-            return $this->getConnection()->getSchemaBuilder()->getColumnListing($this->getTable());
-        });
-    }
+    protected $hidden = ['deleted_at','created_at','user_id'];
 
     public function user()
     {
