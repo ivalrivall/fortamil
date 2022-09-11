@@ -38,4 +38,9 @@ class Order extends Model
     {
         return $this->morphOne(Note::class, 'notable');
     }
+
+    public function orderProducts()
+    {
+        return $this->hasMany(OrderProduct::class);
+    }
 }

@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Repositories\BaseRepository;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 {
@@ -39,6 +40,8 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         if (count(collect($cartRepo)) > 0) {
             $pictureUrl = $this->cloudinary->upload(['file' => $payload['marketplace_picture_label']]);
 
+            DB::beginTransaction();
+
             $order = $this->create([
                 'status' => 'waiting',
                 'store_id' => $payload['store_id'],
@@ -53,11 +56,16 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
                 $data = [
                     'product_id' => $q->product->id,
                     'single_price' => $q->product->price_dropship,
-                    'order_id' => $order->id
+                    'order_id' => $order->id,
+                    'quantity' => $q->quantity
                 ];
                 return $data;
-            });
-            $order->products()->createMany($payload);
+            })->all();
+
+            $order->orderProducts()->createMany($payload);
+
+            DB::commit();
+
             return $order;
         }
         throw new Exception('cart not found');

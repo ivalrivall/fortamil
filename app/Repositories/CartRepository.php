@@ -10,6 +10,7 @@ use App\Models\Product;
 use App\Models\User;
 use App\Repositories\BaseRepository;
 use Exception;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 class CartRepository extends BaseRepository implements CartRepositoryInterface
@@ -123,7 +124,7 @@ class CartRepository extends BaseRepository implements CartRepositoryInterface
      * @param array $cartId
      * @return Model
      */
-    public function getCartByArrayId(array $cartId): ?Model
+    public function getCartByArrayId(array $cartId): ?Collection
     {
         $cart = $this->model->whereIn('id', $cartId)->get();
         return $cart;
