@@ -117,4 +117,15 @@ class CartRepository extends BaseRepository implements CartRepositoryInterface
         $cart = $this->model->where('product_id', $productId)->where('user_id', $userId)->first();
         return $cart;
     }
+
+    /**
+     * get cart by array id
+     * @param array $cartId
+     * @return Model
+     */
+    public function getCartByArrayId(array $cartId): ?Model
+    {
+        $cart = $this->model->whereIn('id', $cartId)->get();
+        return $cart;
+    }
 }

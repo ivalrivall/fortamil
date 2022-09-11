@@ -55,6 +55,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(NoteRepositoryInterface::class, NoteRepository::class);
         $this->app->bind(NotificationRepositoryInterface::class, NotificationRepository::class);
         $this->app->bind(OrderRepositoryInterface::class, OrderRepository::class);
+        $this->app->bind(OrderProductRepositoryInterface::class, OrderRepository::class);
         $this->app->bind(PaymentMethodRepositoryInterface::class, PaymentMethodRepository::class);
         $this->app->bind(PictureProductRepositoryInterface::class, PictureProductRepository::class);
         $this->app->bind(ProductRepositoryInterface::class, ProductRepository::class);

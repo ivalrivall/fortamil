@@ -60,6 +60,7 @@ class OrderController extends Controller
             'marketplace_number_invoice' => $validated['marketplace_number_invoice'],
             'marketplace_picture_label' => $request->file('marketplace_picture_label'),
             'customer_id' => $customer->id,
+            'cart_id' => $validated['cart_id']
         ]);
 
         if (is_string($validated['notes']) && $validated['notes'] !== null) {
