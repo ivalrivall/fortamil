@@ -58,12 +58,21 @@ class CartRepository extends BaseRepository implements CartRepositoryInterface
         if (!$isAvailable) {
             throw new Exception('Stock of product not available');
         }
-        $cart = $this->create([
-            'product_id' => $productId,
-            'quantity' => $qty,
-            'user_id' => $userId
-        ]);
-        return $cart;
+        $cart = $this->hasProductOnUserCart($productId, $userId);
+        if ($cart) {
+            $quantity = $qty + $cart->quantity;
+            $this->update($cart->id, [
+                'quantity' => $quantity
+            ]);
+            $result = $this->findById($cart->id);
+        } else {
+            $result = $this->create([
+                'product_id' => $productId,
+                'quantity' => $qty,
+                'user_id' => $userId
+            ]);
+        }
+        return $result;
     }
 
     /**
@@ -86,6 +95,18 @@ class CartRepository extends BaseRepository implements CartRepositoryInterface
             throw new Exception('Failed empty cart');
         }
 
+        return $cart;
+    }
+
+    /**
+     * check product has been added to cart
+     * @param int $productId
+     * @param int $userId
+     * @return Model
+     */
+    public function hasProductOnUserCart(int $productId, int $userId): ?Model
+    {
+        $cart = $this->model->where('product_id', $productId)->where('user_id', $userId)->first();
         return $cart;
     }
 }
