@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Warehouse;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class BasePaginateRequest extends FormRequest
+class WarehousePaginateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,6 +24,8 @@ class BasePaginateRequest extends FormRequest
     public function rules()
     {
         $paginate = config('paginate');
-        return $paginate;
+        return array_merge($paginate, [
+            'city' => 'present|nullable|string'
+        ]);
     }
 }

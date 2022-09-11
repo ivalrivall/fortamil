@@ -32,12 +32,29 @@ class WarehouseRepository extends BaseRepository implements WarehouseRepositoryI
     {
         $per_page = $request->per_page;
         $sort = $request->sort;
+        $city = $request->city;
 
-        $data = $this->model;
+        $data = $this->model->with(['addresses.city' => function($q) {
+            $q->select('id','name','meta');
+        }, 'addresses.district' => function($q) {
+            $q->select('id','name','meta');
+        }, 'addresses.province' => function($q) {
+            $q->select('id','name','meta');
+        }, 'addresses.village' => function ($q) {
+            $q->select('id','name','meta');
+        }])->exclude(['created_by','created_at']);
 
         if ($sort) {
             $sort = explode('|', $sort);
             $data = $data->orderBy($sort[0], $sort[1]);
+        }
+
+        if ($city) {
+            $data = $data->whereHas('addresses', function($q) use ($city) {
+                $q->whereHas('city', function($c) use ($city) {
+                    $c->where('name', 'ilike', "%$city%");
+                });
+            });
         }
 
         if (!$per_page) {

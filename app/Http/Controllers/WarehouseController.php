@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Library\ApiHelpers;
 use App\Http\Requests\BasePaginateRequest;
 use App\Http\Requests\Warehouse\WarehouseCreateRequest;
+use App\Http\Requests\Warehouse\WarehousePaginateRequest;
 use App\Interfaces\CloudinaryRepositoryInterface;
 use App\Interfaces\WarehouseRepositoryInterface;
 use App\Models\Address;
@@ -26,7 +27,7 @@ class WarehouseController extends Controller
         $this->cloud = $cloud;
     }
 
-    public function paginate(BasePaginateRequest $request) : JsonResponse
+    public function paginate(WarehousePaginateRequest $request) : JsonResponse
     {
         $validated = $request->validated();
         $warehouse = $this->warehouse->paginate($request->merge($validated));
