@@ -86,6 +86,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
             // ORDER
             Route::post('order', [OrderController::class, 'create']);
+            Route::get('order/paginate', [OrderController::class, 'getUserOrder']);
 
             // PRODUCT
             Route::get('product/warehouse', [ProductController::class, 'getProductByWarehouse']);

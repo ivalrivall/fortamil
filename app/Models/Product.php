@@ -13,7 +13,7 @@ class Product extends Model
 
     protected $guarded = [];
 
-    protected $hidden = ['deleted_at','created_at','updated_at','warehouse_id'];
+    protected $hidden = ['deleted_at','created_at','updated_at','warehouse_id','category_id'];
 
     public function orders()
     {

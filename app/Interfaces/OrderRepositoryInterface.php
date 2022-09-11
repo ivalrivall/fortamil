@@ -7,4 +7,5 @@ use App\Interfaces\BaseRepositoryInterface;
 interface OrderRepositoryInterface extends BaseRepositoryInterface
 {
     public function createOrder(array $payload);
+    public function getUserOrder($payload);
 }

@@ -12,6 +12,8 @@ class Store extends Model
 
     protected $guarded = [];
 
+    protected $hidden = ['deleted_at','user_id','marketplace_id', 'created_at', 'updated_at'];
+
     public function addresses()
     {
         return $this->morphMany(Address::class, 'addressable');
@@ -28,5 +30,10 @@ class Store extends Model
     public function orders()
     {
         return $this->hasMany(Order::class);
+    }
+
+    public function marketplace()
+    {
+        return $this->belongsTo(Marketplace::class);
     }
 }

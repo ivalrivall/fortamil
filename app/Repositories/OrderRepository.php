@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Repositories\BaseRepository;
 use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class OrderRepository extends BaseRepository implements OrderRepositoryInterface
@@ -69,5 +70,38 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
             return $order;
         }
         throw new Exception('cart not found');
+    }
+
+    /**
+     * get user order
+     * @param Request $request
+     */
+    public function getUserOrder($request)
+    {
+        $per_page = $request->per_page;
+        $sort = $request->sort;
+        $s = $request->search;
+
+        $data = $this->model->where('user_id', $request->user_id)
+            ->with(['store.marketplace', 'customer']);
+
+        if ($s) {
+            $data = $data->where(function($q) use ($s) {
+                $q->where('status', 'ilike', "%$s%")
+                ->orWhere('number_resi', 'ilike', "%$s%")
+                ->orWhere('marketplace_number_invoice', 'ilike', "%$s%");
+            });
+        }
+
+        if ($sort) {
+            $sort = explode('|', $sort);
+            $data = $data->orderBy($sort[0], $sort[1]);
+        }
+
+        if (!$per_page) {
+            $per_page = 10;
+        }
+
+        return $data->simplePaginate($per_page);
     }
 }

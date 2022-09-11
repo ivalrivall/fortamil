@@ -14,6 +14,8 @@ class Order extends Model
 
     protected $guarded = ['deleted_at'];
 
+    protected $hidden = ['deleted_at', 'user_id', 'store_id', 'customer_id'];
+
     public function store()
     {
         return $this->belongsTo(Store::class);
@@ -42,5 +44,15 @@ class Order extends Model
     public function orderProducts()
     {
         return $this->hasMany(OrderProduct::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
     }
 }

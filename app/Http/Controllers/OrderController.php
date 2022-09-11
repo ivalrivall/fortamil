@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Library\ApiHelpers;
+use App\Http\Requests\BasePaginateRequest;
 use App\Http\Requests\Order\OrderCreateRequest;
 use App\Interfaces\CustomerRepositoryInterface;
 use App\Interfaces\NoteRepositoryInterface;
@@ -69,5 +70,19 @@ class OrderController extends Controller
         }
 
         return $this->onSuccess($order, 'Order created');
+    }
+
+
+    /**
+     * get user order
+     * @param BasePaginateRequest $request
+     */
+    public function getUserOrder(BasePaginateRequest $request) : JsonResponse
+    {
+        $validated = $request->validated();
+        $mergedRequest = $request->merge(array_merge($validated, ['user_id' => $request->user()->id]));
+        $order = $this->order->getUserOrder($mergedRequest);
+
+        return $this->onSuccess($order, 'Order fetched');
     }
 }
