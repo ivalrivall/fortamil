@@ -39,6 +39,9 @@ class CartRepository extends BaseRepository implements CartRepositoryInterface
         if (!$cart) {
             throw new Exception('Cart not found');
         }
+        if ($quantity == 0) {
+            return $this->deleteById($cartId);
+        }
         $isAvailable = $this->product->checkStockIsAvailable($cart->product_id, $quantity);
         if (!$isAvailable) {
             throw new Exception('Stock of product not available');
