@@ -78,6 +78,8 @@ class WarehouseRepository extends BaseRepository implements WarehouseRepositoryI
             ->where('warehouse_id', $warehouseId)
             ->with(['category' => function ($q) {
                 $q->select('id','name','slug','picture');
+            }, 'pictures' => function ($q) {
+                $q->select('path', 'product_id');
             }]);
 
         if ($search) {

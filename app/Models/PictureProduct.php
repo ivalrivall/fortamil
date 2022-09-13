@@ -12,6 +12,7 @@ class PictureProduct extends Model
 
     protected $table = 'picture_products';
     protected $guarded = [];
+    protected $hidden = ['product_id', 'deleted_at'];
 
     public function product()
     {
