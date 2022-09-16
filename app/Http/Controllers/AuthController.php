@@ -105,7 +105,9 @@ class AuthController extends Controller
             return $this->onError('Unauthorized', 401);
         }
 
-        $user = User::where('email', $validated['email'])->firstOrFail();
+        $user = User::where('email', $validated['email'])->with(['role' => function($q) {
+            $q->select('id', 'name', 'slug');
+        }])->firstOrFail();
         if (!$user) {
             return $this->onError('Failed login');
         }
@@ -113,6 +115,14 @@ class AuthController extends Controller
             'fcm_token' => $validated['fcm_token']
         ]);
         $token = $user->createToken(env('HASH_TOKEN'))->plainTextToken;
+        if (in_array($user->role->slug, ['admin'])) {
+            $user->ability = (array)[
+                (object)[
+                    'action' => 'manage',
+                    'subject' => 'all'
+                ]
+            ];
+        }
         $result = [
             'user' => $user,
             'access_token' => $token
