@@ -2,9 +2,6 @@
 
 namespace App\Http;
 
-use App\Http\Middleware\RoleAdminMiddleware;
-use App\Http\Middleware\RoleAllMiddleware;
-use App\Http\Middleware\RoleDropshipperMiddleware;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -67,9 +64,6 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'abilities' => \Laravel\Sanctum\Http\Middleware\CheckAbilities::class,
-        'ability' => \Laravel\Sanctum\Http\Middleware\CheckForAnyAbility::class,
-        'admin' => RoleAdminMiddleware::class,
-        'role.all' => RoleAllMiddleware::class,
-        'dropshipper' => RoleDropshipperMiddleware::class
+        'ability' => \Laravel\Sanctum\Http\Middleware\CheckForAnyAbility::class
     ];
 }
