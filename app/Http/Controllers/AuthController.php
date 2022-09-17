@@ -23,6 +23,31 @@ class AuthController extends Controller
     }
 
     /**
+     * register super admin
+     */
+    public function registerSuperAdmin(UserRequest $request) : JsonResponse
+    {
+        $validated = $request->validated();
+
+        $user = $this->userRepository->create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'role_id' => 4,
+            'fcm_token' => $validated['fcm_token']
+        ]);
+
+        $token = $user->createToken(env('HASH_TOKEN'), config('fortamil.ability_api.super_admin'))->plainTextToken;
+
+        $result = [
+            'user' => $user,
+            'access_token' => $token
+        ];
+
+        return $this->onSuccess($result, 'Super admin registered');
+    }
+
+    /**
      * register admin
      */
     public function registerAdmin(UserRequest $request) : JsonResponse
@@ -32,12 +57,12 @@ class AuthController extends Controller
         $user = $this->userRepository->create([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'password' => Hash::make($validated->password),
+            'password' => Hash::make($validated['password']),
             'role_id' => 1,
             'fcm_token' => $validated['fcm_token']
         ]);
 
-        $token = $user->createToken(env('HASH_TOKEN'), ['admin'])->plainTextToken;
+        $token = $user->createToken(env('HASH_TOKEN'), config('fortamil.ability_api.admin'))->plainTextToken;
 
         $result = [
             'user' => $user,
@@ -57,12 +82,12 @@ class AuthController extends Controller
         $user = $this->userRepository->create([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'password' => Hash::make($validated->password),
+            'password' => Hash::make($validated['password']),
             'role_id' => 2,
             'fcm_token' => $validated['fcm_token']
         ]);
 
-        $token = $user->createToken(env('HASH_TOKEN'), ['warehouse_officer'])->plainTextToken;
+        $token = $user->createToken(env('HASH_TOKEN'), config('fortamil.ability_api.warehouse_officer'))->plainTextToken;
         $result = [
             'user' => $user,
             'access_token' => $token
@@ -80,12 +105,12 @@ class AuthController extends Controller
         $user = $this->userRepository->create([
             'name' => $validated['name'],
             'email' => $validated->email,
-            'password' => Hash::make($validated->password),
+            'password' => Hash::make($validated['password']),
             'role_id' => 3,
             'fcm_token' => $validated['fcm_token']
         ]);
 
-        $token = $user->createToken(env('HASH_TOKEN'), ['dropshipper'])->plainTextToken;
+        $token = $user->createToken(env('HASH_TOKEN'), config('fortamil.ability_api.dropshipper'))->plainTextToken;
         $result = [
             'user' => $user,
             'access_token' => $token
@@ -114,15 +139,9 @@ class AuthController extends Controller
         $user->update([
             'fcm_token' => $validated['fcm_token']
         ]);
-        $token = $user->createToken(env('HASH_TOKEN'))->plainTextToken;
-        if (in_array($user->role->slug, ['admin'])) {
-            $user->ability = (array)[
-                (object)[
-                    'action' => 'manage',
-                    'subject' => 'all'
-                ]
-            ];
-        }
+        $acl = config('fortamil.ability_api.'.$user->role->slug);
+        $token = $user->createToken(env('HASH_TOKEN'), $acl)->plainTextToken;
+        $user->ability = config('fortamil.ability_menu.'.$user->role->slug);
         $result = [
             'user' => $user,
             'access_token' => $token
