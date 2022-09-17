@@ -35,69 +35,67 @@ Route::post('register/dropshipper', [AuthController::class, 'registerDropshipper
 
 Route::post('login', [AuthController::class, 'login']);
 
-Route::group(['middleware' => ['auth:sanctum']], function () {
-    Route::group(['middleware' => ['role.all']], function () {
-        // PRODUCT
-        Route::post('product', [ProductController::class, 'create']);
+Route::group(['middleware' => ['auth:sanctum', 'ability:basic']], function () {
+    // PRODUCT
+    Route::post('product', [ProductController::class, 'create'])->middleware(['ability:product.create']);
 
-        // MARKETPLACE
-        Route::get('marketplace', [MarketplaceController::class, 'getAll']);
+    // MARKETPLACE
+    Route::get('marketplace', [MarketplaceController::class, 'getAll']);
 
-        // LOGOUT
-        Route::post('logout', [AuthController::class, 'logout']);
-        Route::post('logoutall', [AuthController::class, 'logoutAll']);
+    // LOGOUT
+    Route::post('logout', [AuthController::class, 'logout']);
+    Route::post('logoutall', [AuthController::class, 'logoutAll']);
 
-        // UPLOAD
-        Route::post('upload', [CloudinaryController::class, 'upload']);
+    // UPLOAD
+    Route::post('upload', [CloudinaryController::class, 'upload']);
 
-        // PROFILE
-        Route::get('/profile', function(Request $request) {
-            return auth()->user();
-        });
-
-        // CUSTOMER
-        Route::post('customer-with-address', [CustomerController::class, 'createWithAddress']);
-
-        // WAREHOUSE
-        Route::get('warehouse/paginate', [WarehouseController::class, 'paginate']);
-        Route::post('warehouse', [WarehouseController::class, 'create']);
-        Route::get('warehouse/{warehouseId}/product', [WarehouseController::class, 'getProductByWarehousePaginate']);
-
-        // NOTIFICATION
-        Route::post('notif/{userId}/paginate', [NotificationController::class, 'paginateUserNotif']);
-        Route::get('notif/read-all', [NotificationController::class, 'readAll']);
-        Route::get('notif/{notifId}/read', [NotificationController::class, 'markRead']);
-        Route::get('notif/{notifId}/unread', [NotificationController::class, 'markUnread']);
-
-        // PAYMENT METHOD
-        Route::get('payment-method', [PaymentMethodController::class, 'getAll']);
-
-        Route::group(['middleware' => ['dropshipper']], function () {
-            // STORE
-            Route::post('store', [StoreController::class, 'create']);
-            Route::get('store/paginate', [StoreController::class, 'paginate']);
-
-            // CART
-            Route::post('cart/product', [CartController::class, 'addProduct']);
-            Route::delete('cart/product', [CartController::class, 'removeProduct']);
-            Route::post('cart/quantity', [CartController::class, 'editQuantity']);
-            Route::get('cart/empty', [CartController::class, 'emptyCart']);
-            Route::get('user/carts', [UserController::class, 'getCarts']);
-
-            // ORDER
-            Route::post('order', [OrderController::class, 'create']);
-            Route::get('order/paginate', [OrderController::class, 'getUserOrder']);
-
-            // PRODUCT
-            Route::get('product/warehouse', [ProductController::class, 'getProductByWarehouse']);
-        });
-
-        Route::group(['middleware' => ['admin']], function () {
-            // REGISTER
-            Route::post('register/warehouse', [AuthController::class, 'registerWarehouseOfficer']);
-            Route::post('register/admin', [AuthController::class, 'registerAdmin']);
-        });
+    // PROFILE
+    Route::get('/profile', function() {
+        return auth()->user();
     });
+
+    // CUSTOMER
+    Route::post('customer-with-address', [CustomerController::class, 'createWithAddress'])->middleware([
+        'ability:customer.create,
+        dropshipper'
+    ]);
+
+    // WAREHOUSE
+    Route::get('warehouse/paginate', [WarehouseController::class, 'paginate']);
+    Route::post('warehouse', [WarehouseController::class, 'create']);
+    Route::get('warehouse/{warehouseId}/product', [WarehouseController::class, 'getProductByWarehousePaginate']);
+
+    // NOTIFICATION
+    Route::post('notif/{userId}/paginate', [NotificationController::class, 'paginateUserNotif']);
+    Route::get('notif/read-all', [NotificationController::class, 'readAll']);
+    Route::get('notif/{notifId}/read', [NotificationController::class, 'markRead']);
+    Route::get('notif/{notifId}/unread', [NotificationController::class, 'markUnread']);
+
+    // PAYMENT METHOD
+    Route::get('payment-method', [PaymentMethodController::class, 'getAll']);
+
+    // STORE
+    Route::post('store', [StoreController::class, 'create'])->middleware(['ability:store.create']);
+    Route::get('store/paginate', [StoreController::class, 'paginate'])->middleware(['ability:store.read']);
+
+    // CART
+    Route::post('cart/product', [CartController::class, 'addProduct'])->middleware(['ability:cart,cart.add_product']);
+    Route::delete('cart/product', [CartController::class, 'removeProduct'])->middleware(['ability:cart,cart.remove']);
+    Route::post('cart/quantity', [CartController::class, 'editQuantity'])->middleware(['ability:cart,cart.edit_quantity']);
+    Route::get('cart/empty', [CartController::class, 'emptyCart'])->middleware(['ability:cart,cart.empty_quantity']);;
+    Route::get('user/carts', [UserController::class, 'getCarts'])->middleware(['ability:cart']);
+
+    // ORDER
+    Route::post('order', [OrderController::class, 'create'])->middleware(['ability:dropshipper,admin']);
+    Route::get('order/paginate', [OrderController::class, 'getUserOrder'])->middleware(['ability:dropshipper,admin']);
+
+    // PRODUCT
+    Route::get('product/warehouse', [ProductController::class, 'getProductByWarehouse'])->middleware(['ability:dropshipper,admin']);
+
+    // REGISTER
+    Route::post('register/warehouse', [AuthController::class, 'registerWarehouseOfficer'])->middleware(['ability:admin,super_admin']);
+    Route::post('register/admin', [AuthController::class, 'registerAdmin'])->middleware(['ability:super_admin']);
+    Route::post('register/sa', [AuthController::class, 'registerSuperAdmin'])->middleware(['ability:super_admin']);
 });
 
 Route::get('get-provinces', [RegionController::class, 'getProvinces']);
