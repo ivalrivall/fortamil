@@ -6,6 +6,15 @@ use Illuminate\Http\JsonResponse;
 
 trait ApiHelpers
 {
+    protected function isSuperAdmin($user): bool
+    {
+        if (!empty($user)) {
+            return $user->tokenCan('super_admin');
+        }
+
+        return false;
+    }
+
     protected function isAdmin($user): bool
     {
         if (!empty($user)) {
@@ -31,19 +40,6 @@ trait ApiHelpers
             return $user->tokenCan('warehouse_officer');
         }
 
-        return false;
-    }
-
-    protected function isAuthehticatedUser($user): bool
-    {
-        if (!empty($user)) {
-            $isWarehouse = $user->tokenCan('warehouse_officer');
-            $isDropshipper = $user->tokenCan('dropshipper');
-            $isAdmin = $user->tokenCan('admin');
-            if ($isWarehouse || $isDropshipper || $isAdmin) {
-                return true;
-            }
-        }
         return false;
     }
 
