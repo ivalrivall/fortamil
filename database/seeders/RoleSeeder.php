@@ -31,7 +31,7 @@ class RoleSeeder extends Seeder
             ],
             [
                 'name' => 'Super Admin',
-                'slug' => 'super-admin'
+                'slug' => 'super_admin'
             ]
         ]);
     }

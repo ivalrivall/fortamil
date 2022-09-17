@@ -17,6 +17,7 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
+        DB::table('users')->truncate();
         DB::table('users')->insert([
             [
                 'name' => 'admin',
@@ -35,6 +36,12 @@ class UserSeeder extends Seeder
                 'email' => 'dropshipper@fortamil.com',
                 'password' => Hash::make('password'),
                 'role_id' => 3,
+            ],
+            [
+                'name' => 'super admin',
+                'email' => 'sa@fortamil.com',
+                'password' => Hash::make('password'),
+                'role_id' => 4,
             ]
         ]);
     }
