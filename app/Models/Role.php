@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * slug: admin, warehouse_officer, dropshipper
+ * slug: admin, warehouse_officer, dropshipper, super-admin
  */
 class Role extends Model
 {

@@ -15,6 +15,7 @@ class RoleSeeder extends Seeder
      */
     public function run()
     {
+        DB::table('roles')->truncate();
         DB::table('roles')->insert([
             [
                 'name' => 'Admin',
@@ -26,7 +27,11 @@ class RoleSeeder extends Seeder
             ],
             [
                 'name' => 'dropshipper',
-                'email' => 'dropshipper'
+                'slug' => 'dropshipper'
+            ],
+            [
+                'name' => 'Super Admin',
+                'slug' => 'super-admin'
             ]
         ]);
     }
