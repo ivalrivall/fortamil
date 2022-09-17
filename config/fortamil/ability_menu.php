@@ -1,33 +1,39 @@
 <?php
 
+use Illuminate\Support\Arr;
+
 $dropshipper = [
     [
-        'action' => 'manage',
-        'subject' => 'all'
-    ]
+        'action' => 'read',
+        'subject' => 'Auth'
+    ],
+    [
+        'action' => 'read',
+        'subject' => 'ACL'
+    ],
 ];
 $warehouse = [
     [
-        'action' => 'manage',
-        'subject' => 'all'
-    ]
-];
-$admin = [
+        'action' => 'read',
+        'subject' => 'Auth'
+    ],
     [
-        'action' => 'manage',
-        'subject' => 'all'
-    ]
+        'action' => 'read',
+        'subject' => 'ACL'
+    ],
 ];
-$superAdmin = array_merge([
+$admin = array_merge_recursive(
     [
-        'action' => 'manage',
-        'subject' => 'all'
-    ]
-], $admin, $warehouse, $dropshipper);
+        [
+            'action' => 'manage',
+            'subject' => 'all'
+        ]
+    ], $warehouse, $dropshipper);
+$superAdmin = $admin;
 
 return [
-    'admin' => array_unique($admin),
-    'super_admin' => array_unique($superAdmin),
-    'dropshipper' => array_unique($dropshipper),
-    'warehouse_officer' => array_unique($warehouse)
+    'admin' => array_unique($admin, SORT_REGULAR),
+    'super_admin' => array_unique($superAdmin, SORT_REGULAR),
+    'dropshipper' => array_unique($dropshipper, SORT_REGULAR),
+    'warehouse_officer' => array_unique($warehouse, SORT_REGULAR)
 ];
