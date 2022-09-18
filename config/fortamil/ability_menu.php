@@ -26,10 +26,16 @@ $admin = array_merge_recursive(
     [
         [
             'action' => 'manage',
-            'subject' => 'all'
+            'subject' => 'Product'
         ]
     ], $warehouse, $dropshipper);
-$superAdmin = $admin;
+$superAdmin =
+    [
+        [
+            'action' => 'manage',
+            'subject' => 'all'
+        ]
+    ];
 
 return [
     'admin' => array_unique($admin, SORT_REGULAR),
