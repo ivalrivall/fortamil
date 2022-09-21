@@ -22,7 +22,7 @@ class CategoryFactory extends Factory
         return [
             'name' => $name,
             'slug' => strtolower($name),
-            'picture' => $this->faker->imageUrl(360, 360, 'animals', true, 'cats')
+            'picture' => $this->faker->imageUrl(360, 360)
         ];
     }
 }
