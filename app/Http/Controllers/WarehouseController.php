@@ -75,4 +75,14 @@ class WarehouseController extends Controller
         return $this->onSuccess($product);
     }
 
+    /**
+     * search warehouse
+     */
+    public function searchWarehouse(Request $request) : JsonResponse
+    {
+        $validated = $request->validate(['search' => 'present|nullable']);
+        $product = $this->warehouse->searchWarehouse($request->replace($validated));
+        return $this->onSuccess($product);
+    }
+
 }

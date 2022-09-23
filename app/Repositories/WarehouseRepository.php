@@ -62,7 +62,7 @@ class WarehouseRepository extends BaseRepository implements WarehouseRepositoryI
             $per_page = 10;
         }
 
-        return $data->simplePaginate($per_page);
+        return $data->simplePaginate($per_page)->makeVisible(['deleted_at']);
     }
 
     /**
@@ -101,5 +101,25 @@ class WarehouseRepository extends BaseRepository implements WarehouseRepositoryI
         }
 
         return $data->simplePaginate($per_page);
+    }
+
+    /**
+     * get warehouse by search query
+     */
+    public function searchWarehouse($request)
+    {
+        $search = $request->search;
+        $data = $this->model;
+
+        if ($search) {
+            $data = $data->where('name', 'ilike', "%$search%")->orWhere('address', 'ilike', "%$search%")
+                ->orWhereHas('addresses', function($q) use ($search) {
+                    $q->whereHas('city', function($c) use ($search) {
+                        $c->where('name', 'ilike', "%$search%");
+                    });
+                });
+        }
+
+        return $data->orderBy('name', 'ASC')->limit(10)->get();
     }
 }

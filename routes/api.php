@@ -88,6 +88,7 @@ Route::group(['middleware' => ['auth:sanctum', 'ability:basic']], function () {
     // WAREHOUSE
     Route::get('warehouse/paginate', [WarehouseController::class, 'paginate']);
     Route::post('warehouse', [WarehouseController::class, 'create']);
+    Route::get('warehouse/search', [WarehouseController::class, 'searchWarehouse']);
     Route::get('warehouse/{warehouseId}/product', [WarehouseController::class, 'getProductByWarehousePaginate']);
 });
 
