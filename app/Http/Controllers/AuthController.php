@@ -104,7 +104,7 @@ class AuthController extends Controller
 
         $user = $this->userRepository->create([
             'name' => $validated['name'],
-            'email' => $validated->email,
+            'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'role_id' => 3,
             'fcm_token' => $validated['fcm_token']
