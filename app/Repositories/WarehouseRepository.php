@@ -73,17 +73,30 @@ class WarehouseRepository extends BaseRepository implements WarehouseRepositoryI
         $per_page = $request->per_page;
         $sort = $request->sort;
         $search = $request->search;
+        $status = $request->status;
 
         $data = $this->product
-            ->where('warehouse_id', $warehouseId)
             ->with(['category' => function ($q) {
                 $q->select('id','name','slug','picture');
             }, 'pictures' => function ($q) {
                 $q->select('path', 'product_id');
             }]);
 
+        if ($status) {
+            if ($status == 'inactive') {
+                $data = $data->onlyTrashed();
+            }
+            if ($status == 'all') {
+                $data = $data->withTrashed();
+            }
+        }
+
+        if ($warehouseId) {
+            $data = $data->where('warehouse_id', $warehouseId);
+        };
+
         if ($search) {
-            $data->where(function($q) use ($search) {
+            $data = $data->where(function($q) use ($search) {
                 $q->where('name', 'ilike', "%$search%")
                 ->orWhere('description', 'ilike', "%$search%")
                 ->orWhere('sku', 'ilike', "%$search%")

@@ -6,6 +6,7 @@ use App\Http\Library\ApiHelpers;
 use App\Http\Requests\BasePaginateRequest;
 use App\Http\Requests\Warehouse\WarehouseCreateRequest;
 use App\Http\Requests\Warehouse\WarehousePaginateRequest;
+use App\Http\Requests\Warehouse\WarehouseProductPaginateRequest;
 use App\Interfaces\CloudinaryRepositoryInterface;
 use App\Interfaces\WarehouseRepositoryInterface;
 use App\Models\Address;
@@ -68,7 +69,7 @@ class WarehouseController extends Controller
     /**
      * get product paginate
      */
-    public function getProductByWarehousePaginate(BasePaginateRequest $request, $warehouseId): JsonResponse
+    public function getProductByWarehousePaginate(WarehouseProductPaginateRequest $request, $warehouseId): JsonResponse
     {
         $validated = $request->validated();
         $product = $this->warehouse->getProductPaginate($request->merge($validated), $warehouseId);
