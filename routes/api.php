@@ -48,6 +48,7 @@ Route::group(['middleware' => ['auth:sanctum', 'ability:basic']], function () {
     // PRODUCT
     Route::post('product', [ProductController::class, 'create'])->middleware(['ability:product.create']);
     Route::get('product/warehouse', [ProductController::class, 'getProductByWarehouse'])->middleware(['ability:dropshipper,admin']);
+    Route::post('product/{productId}/disable', [ProductController::class, 'disableProduct'])->middleware(['ability:super_admin']);
 
     // LOGOUT
     Route::post('logout', [AuthController::class, 'logout']);

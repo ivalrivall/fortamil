@@ -70,4 +70,15 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
             return true;
         }
     }
+
+    /**
+     * disable or enable product by id
+     */
+    public function disableProductService(array $data)
+    {
+        if ($data['status']) {
+            return $this->restoreById($data['id']);
+        }
+        return $this->deleteById($data['id']);
+    }
 }

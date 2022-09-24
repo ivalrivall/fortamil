@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 class ProductController extends Controller
 {
@@ -68,5 +69,19 @@ class ProductController extends Controller
         $validated = $request->validated();
         $productByWarehouse = $this->warehouse->findById($validated['warehouse_id'], ['*'], ['products']);
         return $this->onSuccess($productByWarehouse->products, 'Success get product');
+    }
+
+    public function disableProduct(Request $request, $productId): JsonResponse
+    {
+        try {
+            $product = $this->product->disableProductService([
+                'id' => $productId,
+                'status' => $request->status,
+            ]);
+            return $this->onSuccess($product, "Success change product $productId with status ".($request->status ? 'active' : 'inactive'));
+        } catch (Exception $th) {
+            Log::error($th->getMessage());
+            return $this->onError('Failed change status');
+        }
     }
 }
