@@ -115,7 +115,9 @@ class WarehouseRepository extends BaseRepository implements WarehouseRepositoryI
             $per_page = 10;
         }
 
-        return $data->simplePaginate($per_page)->makeVisible(['deleted_at']);
+        $data = $data->simplePaginate($per_page);
+        $data->makeVisible(['deleted_at']);
+        return $data;
     }
 
     /**
