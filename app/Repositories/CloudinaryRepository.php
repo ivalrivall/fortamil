@@ -9,9 +9,24 @@ use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class CloudinaryRepository implements CloudinaryRepositoryInterface
 {
+    /**
+     * upload asset to cloudinary
+     * @param array $payload
+     * @return string url file
+     */
     public function upload(array $payload) : string
     {
         $uploadedFileUrl = Cloudinary::upload($payload['file']->getRealPath())->getSecurePath();
+        return $uploadedFileUrl;
+    }
+
+    /**
+     * delete asset on cloudinary
+     * @param string $fileName
+     */
+    public function delete(string $fileName)
+    {
+        $uploadedFileUrl = Cloudinary::destroy($fileName);
         return $uploadedFileUrl;
     }
 }
