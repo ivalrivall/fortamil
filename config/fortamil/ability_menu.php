@@ -34,6 +34,10 @@ $superAdmin =
         [
             'action' => 'manage',
             'subject' => 'all'
+        ],
+        [
+            'action' => 'manage',
+            'subject' => 'Warehouse'
         ]
     ];
 
