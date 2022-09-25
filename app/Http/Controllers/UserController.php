@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Library\ApiHelpers;
 use App\Http\Requests\BasePaginateRequest;
+use App\Http\Requests\User\UserCreateRequest;
 use App\Http\Requests\User\UserPaginateRequest;
 use App\Interfaces\UserRepositoryInterface;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
@@ -44,6 +46,9 @@ class UserController extends Controller
         return $this->onSuccess($cart, 'Success fetch');
     }
 
+    /**
+     * soft delete user
+     */
     public function disableUser(Request $request, $userId): JsonResponse
     {
         try {
@@ -55,6 +60,35 @@ class UserController extends Controller
         } catch (Exception $th) {
             Log::error($th->getMessage());
             return $this->onError('Failed change status');
+        }
+    }
+
+    /**
+     * force delete user
+     */
+    public function forceDelete(Request $request, $userId): JsonResponse
+    {
+        try {
+            $u = $this->user->deleteUserService($userId);
+            return $this->onSuccess($u, "Success delete");
+        } catch (Exception $th) {
+            Log::error($th->getMessage());
+            return $this->onError('Failed delete');
+        }
+    }
+
+    /**
+     * create user
+     */
+    public function createUser(UserCreateRequest $request)
+    {
+        try {
+            $validated = $request->validated();
+            $user = $this->user->createUser($request->replace($validated));
+            return $this->onSuccess($user, 'User created');
+        } catch (Exception $th) {
+            Log::error('create user =>'. $th->getMessage());
+            return $this->onError('Failed create');
         }
     }
 }

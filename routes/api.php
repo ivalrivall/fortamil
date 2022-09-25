@@ -94,6 +94,8 @@ Route::group(['middleware' => ['auth:sanctum', 'ability:basic']], function () {
     // USER
     Route::get('user/paginate', [UserController::class, 'getPaginate'])->middleware(['ability:super_admin']);
     Route::post('user/{userId}/disable', [UserController::class, 'disableUser'])->middleware(['ability:super_admin']);
+    Route::delete('user/{userId}', [UserController::class, 'forceDelete'])->middleware(['ability:super_admin']);
+    Route::post('user', [UserController::class, 'createUser'])->middleware(['ability:super_admin']);
 
     // WAREHOUSE
     Route::get('warehouse/paginate', [WarehouseController::class, 'paginate']);

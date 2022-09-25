@@ -8,6 +8,8 @@ use App\Repositories\BaseRepository;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class UserRepository extends BaseRepository implements UserRepositoryInterface
 {
@@ -106,5 +108,29 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
             return $this->restoreById($data['id']);
         }
         return $this->deleteById($data['id']);
+    }
+
+    /**
+     * delete user permanently
+     * @param int $id
+     */
+    public function deleteUserService(int $id)
+    {
+        return $this->permanentlyDeleteById($id);
+    }
+
+    /**
+     * create user
+     */
+    public function createUser($request)
+    {
+        $user = $this->create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make(Str::random(10)),
+            'role_id' => $request->role_id,
+            'fcm_token' => null
+        ]);
+        return $user;
     }
 }
