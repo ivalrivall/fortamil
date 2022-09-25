@@ -102,6 +102,7 @@ Route::group(['middleware' => ['auth:sanctum', 'ability:basic']], function () {
     Route::post('warehouse', [WarehouseController::class, 'create']);
     Route::get('warehouse/search', [WarehouseController::class, 'searchWarehouse']);
     Route::get('warehouse/{warehouseId}/product', [WarehouseController::class, 'getProductByWarehousePaginate']);
+    Route::post('warehouse/{warehouseId}/edit', [WarehouseController::class, 'editWarehouse'])->middleware(['ability:super_admin,admin']);
 });
 
 // INDONESIA REGION

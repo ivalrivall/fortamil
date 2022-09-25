@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Library\ApiHelpers;
 use App\Http\Requests\BasePaginateRequest;
 use App\Http\Requests\Warehouse\WarehouseCreateRequest;
+use App\Http\Requests\Warehouse\WarehouseEditRequest;
 use App\Http\Requests\Warehouse\WarehousePaginateRequest;
 use App\Http\Requests\Warehouse\WarehouseProductPaginateRequest;
 use App\Interfaces\CloudinaryRepositoryInterface;
@@ -84,6 +85,16 @@ class WarehouseController extends Controller
         $validated = $request->validate(['search' => 'present|nullable']);
         $product = $this->warehouse->searchWarehouse($request->replace($validated));
         return $this->onSuccess($product);
+    }
+
+    /**
+     * edit warehouse
+     */
+    public function editWarehouse(WarehouseEditRequest $request, $warehouseId) : JsonResponse
+    {
+        $validated = $request->validated();
+        $warehouse = $this->warehouse->editService($request->replace($validated), $warehouseId);
+        return $this->onSuccess($warehouse, 'Success edit warehouse');
     }
 
 }

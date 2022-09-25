@@ -2,10 +2,16 @@
 
 namespace App\Repositories;
 
+use App\Interfaces\AddressRepositoryInterface;
+use App\Interfaces\CloudinaryRepositoryInterface;
 use App\Interfaces\WarehouseRepositoryInterface;
 use App\Models\Product;
 use App\Models\Warehouse;
 use App\Repositories\BaseRepository;
+use Exception;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use InvalidArgumentException;
 
 class WarehouseRepository extends BaseRepository implements WarehouseRepositoryInterface
 {
@@ -14,16 +20,25 @@ class WarehouseRepository extends BaseRepository implements WarehouseRepositoryI
      */
     protected $model;
     protected $product;
+    protected $cloud;
+    protected $address;
 
     /**
      * BaseRepository constructor.
      *
      * @param Model $model
      */
-    public function __construct(Warehouse $model, Product $product)
+    public function __construct(
+        Warehouse $model,
+        Product $product,
+        CloudinaryRepositoryInterface $cloud,
+        AddressRepositoryInterface $address
+    )
     {
         $this->model = $model;
         $this->product = $product;
+        $this->cloud = $cloud;
+        $this->address = $address;
     }
 
     /**
@@ -138,5 +153,71 @@ class WarehouseRepository extends BaseRepository implements WarehouseRepositoryI
         }
 
         return $data->orderBy('name', 'ASC')->limit(10)->get();
+    }
+
+    /**
+     * edit warehouse
+     */
+    public function editService($request, $warehouseId)
+    {
+        try {
+            $warehouse = $this->findById($warehouseId);
+        } catch (Exception $th) {
+            throw new InvalidArgumentException('warehouse not found');
+        }
+
+        DB::beginTransaction();
+        try {
+            $address = $this->address->findById($request->address_id);
+            $address->makeVisible(['addressable_type','addressable_id']);
+        } catch (Exception $th) {
+            DB::rollBack();
+            throw new InvalidArgumentException('Selected address not found');
+        }
+        DB::rollBack();
+        if ($address->addressable_type == 'App\Models\Warehouse' && $address->addressable_id == $warehouseId) {
+            try {
+                $address->is_primary = false;
+                $address->title = $request->address_title;
+                $address->recipient = $request->address_recipient;
+                $address->phone_recipient = $request->address_phone_recipient;
+                $address->city_id = $request->city_id;
+                $address->district_id = $request->district_id;
+                $address->province_id = $request->province_id;
+                $address->village_id = $request->village_id;
+                $address->postal_code = $request->postal_code;
+                $address->save();
+            } catch (Exception $th) {
+                Log::error($th->getMessage());
+                DB::rollBack();
+                throw new InvalidArgumentException('Failed update address');
+            }
+        } else {
+            DB::rollBack();
+            throw new InvalidArgumentException('Address is not belongs to warehouse');
+        }
+
+        if ($request->file('picture')) {
+            $path = pathinfo($warehouse->picture);
+            $currentPictureName = $path['filename'];
+            $pictureUrl = $this->cloud->upload(['file' => $request->file('picture')]);
+            $this->cloud->delete($currentPictureName);
+        } else {
+            $pictureUrl = $warehouse->picture;
+        }
+
+        try {
+            $warehouse = $warehouse->update([
+                'name' => $request->name,
+                'picture' => $pictureUrl,
+                'address' => $request->address,
+            ]);
+        } catch (Exception $th) {
+            Log::error($th->getMessage());
+            DB::rollBack();
+            throw new InvalidArgumentException('Failed update warehouse');
+        }
+
+        DB::commit();
     }
 }
