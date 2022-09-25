@@ -26,7 +26,7 @@ class RoleSeeder extends Seeder
                 'slug' => 'warehouse_officer'
             ],
             [
-                'name' => 'dropshipper',
+                'name' => 'Dropshipper',
                 'slug' => 'dropshipper'
             ],
             [
