@@ -119,6 +119,29 @@ class AuthController extends Controller
     }
 
     /**
+     * register cashier
+     */
+    public function registerCashier(UserRequest $request) : JsonResponse
+    {
+        $validated = $request->validated();
+
+        $user = $this->userRepository->create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'role_id' => 5,
+            'fcm_token' => $validated['fcm_token']
+        ]);
+
+        $token = $user->createToken(env('HASH_TOKEN'), config('fortamil.ability_api.cashier'))->plainTextToken;
+        $result = [
+            'user' => $user,
+            'access_token' => $token
+        ];
+        return $this->onSuccess($result, 'Cashier registered');
+    }
+
+    /**
      * login.
      */
     public function login(UserLoginRequest $request) : JsonResponse

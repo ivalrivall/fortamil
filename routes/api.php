@@ -12,6 +12,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RegionController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WarehouseController;
@@ -78,6 +79,10 @@ Route::group(['middleware' => ['auth:sanctum', 'ability:basic']], function () {
     Route::post('register/warehouse', [AuthController::class, 'registerWarehouseOfficer'])->middleware(['ability:admin,super_admin']);
     Route::post('register/admin', [AuthController::class, 'registerAdmin'])->middleware(['ability:super_admin']);
     Route::post('register/sa', [AuthController::class, 'registerSuperAdmin'])->middleware(['ability:super_admin']);
+    Route::post('register/cashier', [AuthController::class, 'registerCashier'])->middleware(['ability:admin,super_admin']);
+
+    // ROLE
+    Route::get('roles', [RoleController::class, 'getRoles'])->middleware(['ability:super_admin']);
 
     // STORE
     Route::post('store', [StoreController::class, 'create'])->middleware(['ability:store.create']);
@@ -85,6 +90,9 @@ Route::group(['middleware' => ['auth:sanctum', 'ability:basic']], function () {
 
     // UPLOAD
     Route::post('upload', [CloudinaryController::class, 'upload']);
+
+    // USER
+    Route::get('user/paginate', [UserController::class, 'getPaginate'])->middleware(['ability:super_admin']);
 
     // WAREHOUSE
     Route::get('warehouse/paginate', [WarehouseController::class, 'paginate']);

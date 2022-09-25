@@ -42,6 +42,12 @@ class UserSeeder extends Seeder
                 'email' => 'sa@fortamil.com',
                 'password' => Hash::make('password'),
                 'role_id' => 4,
+            ],
+            [
+                'name' => 'cashier',
+                'email' => 'cashier@fortamil.com',
+                'password' => Hash::make('password'),
+                'role_id' => 5,
             ]
         ]);
     }

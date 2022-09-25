@@ -7,6 +7,14 @@ return [
         'customer.create',
         'product.create'
     ],
+    'cashier' => [
+        'basic',
+        'cashier',
+        'cart',
+        'cart.add_product',
+        'cart.empty_quantity',
+        'cart.remove',
+    ],
     'dropshipper' => [
         'basic',
         'cart',
