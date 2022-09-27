@@ -71,9 +71,8 @@ Route::group(['middleware' => ['auth:sanctum', 'ability:basic']], function () {
     // PAYMENT METHOD
     Route::get('payment-method', [PaymentMethodController::class, 'getAll']);
 
-    // PROFILE
+    // CURRENT PROFILE
     Route::get('profile', function() { return auth()->user(); });
-    Route::get('user', function (Request $request) { return $request->user(); });
 
     // REGISTER
     Route::post('register/warehouse', [AuthController::class, 'registerWarehouseOfficer'])->middleware(['ability:admin,super_admin']);
