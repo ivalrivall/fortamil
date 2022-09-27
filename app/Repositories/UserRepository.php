@@ -142,9 +142,9 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         try {
             $user = $this->findById($id, ['*'], ['role' => function($q) {
                 $q->select('id','name','slug');
-            }]);
+            }])->makeVisible('deleted_at');
         } catch (\Throwable $th) {
-            $user = $this->findTrashedById($id);
+            $user = $this->findTrashedById($id)->makeVisible('deleted_at');
             $role = collect($user->role);
             $user->role = $role;
         }
