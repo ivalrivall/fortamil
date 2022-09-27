@@ -139,9 +139,15 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
      */
     public function getUserById($id)
     {
-        $user = $this->findById($id, ['*'], ['role' => function($q) {
-            $q->select('id','name','slug');
-        }]);
+        try {
+            $user = $this->findById($id, ['*'], ['role' => function($q) {
+                $q->select('id','name','slug');
+            }]);
+        } catch (\Throwable $th) {
+            $user = $this->findTrashedById($id);
+            $role = collect($user->role);
+            $user->role = $role;
+        }
         return $user;
     }
 }
