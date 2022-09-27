@@ -91,4 +91,18 @@ class UserController extends Controller
             return $this->onError('Failed create');
         }
     }
+
+    /**
+     * get user by id
+     */
+    public function getUserById(Request $request, $id)
+    {
+        try {
+            $user = $this->user->getUserById($id);
+            return $this->onSuccess($user, 'User fetched');
+        } catch (Exception $th) {
+            Log::error('get user by id =>'. $th->getMessage());
+            return $this->onError('User not found');
+        }
+    }
 }

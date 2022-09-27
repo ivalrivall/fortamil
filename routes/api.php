@@ -95,6 +95,7 @@ Route::group(['middleware' => ['auth:sanctum', 'ability:basic']], function () {
     Route::post('user/{userId}/disable', [UserController::class, 'disableUser'])->middleware(['ability:super_admin']);
     Route::delete('user/{userId}', [UserController::class, 'forceDelete'])->middleware(['ability:super_admin']);
     Route::post('user', [UserController::class, 'createUser'])->middleware(['ability:super_admin']);
+    Route::get('user/{userId}', [UserController::class, 'getUserById'])->middleware(['ability:super_admin']);
 
     // WAREHOUSE
     Route::get('warehouse/paginate', [WarehouseController::class, 'paginate']);
@@ -117,3 +118,8 @@ Route::get('get-villages/{districtId}', [RegionController::class, 'getVillages']
 Route::get('village/{villageId}', [RegionController::class, 'getVillage']);
 Route::post('get-regions', [RegionController::class, 'getRegions']);
 Route::post('get-regions-paginate', [RegionController::class, 'getPaginateRegions']);
+
+// MOBILE
+Route::get('mobile/version', function() {
+    return env('MOBILE_APP_VERSION', '0.0.1');
+});

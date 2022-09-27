@@ -133,4 +133,15 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         ]);
         return $user;
     }
+
+    /**
+     * get user by id
+     */
+    public function getUserById($id)
+    {
+        $user = $this->findById($id, ['*'], ['role' => function($q) {
+            $q->select('id','name','slug');
+        }]);
+        return $user;
+    }
 }

@@ -11,4 +11,5 @@ interface UserRepositoryInterface extends BaseRepositoryInterface
     public function disableUserService(array $data);
     public function deleteUserService(int $id);
     public function createUser($request);
+    public function getUserById($id);
 }
