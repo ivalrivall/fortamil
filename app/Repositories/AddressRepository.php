@@ -36,7 +36,15 @@ class AddressRepository extends BaseRepository implements AddressRepositoryInter
     public function getAddressByUserService(int $userId)
     {
         try {
-            $user = $this->user->findById($userId);
+            $user = $this->user->findById($userId, ['*'], ['addresses.province' => function($q) {
+                $q->select('id','name');
+            },'addresses.city' => function($q) {
+                $q->select('id','name');
+            },'addresses.district' => function($q) {
+                $q->select('id','name');
+            },'addresses.village' => function($q) {
+                $q->select('id','name');
+            }]);
         } catch (Exception $th) {
             Log::error("failed get address => ". $th->getMessage());
             throw new InvalidArgumentException('User not found');
