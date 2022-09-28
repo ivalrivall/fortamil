@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AddressController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -33,6 +34,8 @@ Route::post('register/dropshipper', [AuthController::class, 'registerDropshipper
 Route::post('login', [AuthController::class, 'login']);
 
 Route::group(['middleware' => ['auth:sanctum', 'ability:basic']], function () {
+    // ADDRESS
+    Route::get('address/{userId}', [AddressController::class, 'getAddressByUserId'])->middleware(['ability:super_admin']);
 
     // CART
     Route::post('cart/product', [CartController::class, 'addProduct'])->middleware(['ability:cart,cart.add_product']);
