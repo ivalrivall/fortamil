@@ -9,7 +9,9 @@ use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use InvalidArgumentException;
 
 class UserRepository extends BaseRepository implements UserRepositoryInterface
 {
@@ -147,6 +149,24 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
             $user = $this->findTrashedById($id)->makeVisible('deleted_at');
             $role = collect($user->role);
             $user->role = $role;
+        }
+        return $user;
+    }
+
+    /**
+     * edit user
+     */
+    public function editUserService($payload)
+    {
+        try {
+            $user = $this->getUserById($payload->id);
+            $user = $user->update([
+                'name' => $payload->name,
+                'role_id' => $payload->role['id']
+            ]);
+        } catch (\Throwable $th) {
+            Log::error('error edit user => '. $th->getMessage());
+            throw new InvalidArgumentException('Failed edit user');
         }
         return $user;
     }

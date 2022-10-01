@@ -105,4 +105,18 @@ class UserController extends Controller
             return $this->onError('User not found');
         }
     }
+
+    /**
+     * edit user
+     */
+    public function editUser(Request $request)
+    {
+        try {
+            $user = $this->user->editUserService($request);
+            return $this->onSuccess($user, 'User edited');
+        } catch (Exception $th) {
+            Log::error('error edit user => '. $th->getMessage());
+            return $this->onError('Failed edit user');
+        }
+    }
 }
