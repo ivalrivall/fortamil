@@ -49,6 +49,7 @@ class WarehouseRepository extends BaseRepository implements WarehouseRepositoryI
         $per_page = $request->per_page;
         $sort = $request->sort;
         $city = $request->city;
+        $search = $request->search;
 
         $data = $this->model->with(['addresses.city' => function($q) {
             $q->select('id','name','meta');
@@ -70,6 +71,13 @@ class WarehouseRepository extends BaseRepository implements WarehouseRepositoryI
                 $q->whereHas('city', function($c) use ($city) {
                     $c->where('name', 'ilike', "%$city%");
                 });
+            });
+        }
+
+        if ($search) {
+            $data = $data->where(function($q) use ($search) {
+                $q->where('name', 'ilike', "%$search%")
+                    ->orWhere('address', 'ilike', "%$search%");
             });
         }
 
