@@ -76,4 +76,9 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Product::class, 'carts', 'user_id', 'product_id');
     }
+
+    public function warehouseWhitelists()
+    {
+        return $this->belongsToMany(Warehouse::class, 'warehouse_whitelists', 'user_id', 'warehouse_id');
+    }
 }

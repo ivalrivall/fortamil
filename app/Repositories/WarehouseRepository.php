@@ -7,6 +7,7 @@ use App\Interfaces\CloudinaryRepositoryInterface;
 use App\Interfaces\WarehouseRepositoryInterface;
 use App\Models\Product;
 use App\Models\Warehouse;
+use App\Models\WarehouseWhitelist;
 use App\Repositories\BaseRepository;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -22,6 +23,7 @@ class WarehouseRepository extends BaseRepository implements WarehouseRepositoryI
     protected $product;
     protected $cloud;
     protected $address;
+    protected $warehouseWhitelist;
 
     /**
      * BaseRepository constructor.
@@ -31,6 +33,7 @@ class WarehouseRepository extends BaseRepository implements WarehouseRepositoryI
     public function __construct(
         Warehouse $model,
         Product $product,
+        WarehouseWhitelist $warehouseWhitelist,
         CloudinaryRepositoryInterface $cloud,
         AddressRepositoryInterface $address
     )
@@ -39,6 +42,7 @@ class WarehouseRepository extends BaseRepository implements WarehouseRepositoryI
         $this->product = $product;
         $this->cloud = $cloud;
         $this->address = $address;
+        $this->warehouseWhitelist = $warehouseWhitelist;
     }
 
     /**
@@ -51,15 +55,33 @@ class WarehouseRepository extends BaseRepository implements WarehouseRepositoryI
         $city = $request->city;
         $search = $request->search;
 
-        $data = $this->model->with(['addresses.city' => function($q) {
-            $q->select('id','name','meta');
-        }, 'addresses.district' => function($q) {
-            $q->select('id','name','meta');
-        }, 'addresses.province' => function($q) {
-            $q->select('id','name','meta');
-        }, 'addresses.village' => function ($q) {
-            $q->select('id','name','meta');
-        }]);
+        $whitelist = $this->warehouseWhitelist->select('user_id','warehouse_id')->get();
+
+        $userWarehouseWhitelist = collect($whitelist)->pluck('user_id')->all();
+        $warehouseWhitelist = collect($whitelist)->pluck('user_id')->all();
+
+        if (in_array($request->user()->id, $userWarehouseWhitelist)) {
+            $data = $this->model->with(['addresses.city' => function($q) {
+                $q->select('id','name','meta');
+            }, 'addresses.district' => function($q) {
+                $q->select('id','name','meta');
+            }, 'addresses.province' => function($q) {
+                $q->select('id','name','meta');
+            }, 'addresses.village' => function ($q) {
+                $q->select('id','name','meta');
+            }])->whereIn('id', $warehouseWhitelist);
+        } else {
+            $data = $this->model->with(['addresses.city' => function($q) {
+                $q->select('id','name','meta');
+            }, 'addresses.district' => function($q) {
+                $q->select('id','name','meta');
+            }, 'addresses.province' => function($q) {
+                $q->select('id','name','meta');
+            }, 'addresses.village' => function ($q) {
+                $q->select('id','name','meta');
+            }]);
+        }
+
 
         if ($sort) {
             $sort = explode('|', $sort);

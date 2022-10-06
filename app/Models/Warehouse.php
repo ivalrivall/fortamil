@@ -32,4 +32,9 @@ class Warehouse extends Model
     {
         return $this->morphOne(Address::class, 'addressable')->latestOfMany();
     }
+
+    public function whitelists()
+    {
+        return $this->belongsToMany(User::class, 'warehouse_whitelists', 'warehouse_id', 'user_id');
+    }
 }

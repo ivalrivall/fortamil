@@ -67,8 +67,12 @@ class ProductController extends Controller
     public function getProductByWarehouse(GetProductByWarehouseRequest $request): JsonResponse
     {
         $validated = $request->validated();
-        $productByWarehouse = $this->warehouse->findById($validated['warehouse_id'], ['*'], ['products']);
-        return $this->onSuccess($productByWarehouse->products, 'Success get product');
+        $warehouse = $this->warehouse->findById($validated['warehouse_id'], ['*'], ['products']);
+        $canAccessWarehouse = $this->isCanAccessWarehouse($request->user(), $warehouse);
+        if ($canAccessWarehouse) {
+            return $this->onSuccess($warehouse->products, 'Success get product');
+        }
+        return $this->onError('Cannot access warehouse', 403);
     }
 
     public function disableProduct(Request $request, $productId): JsonResponse
