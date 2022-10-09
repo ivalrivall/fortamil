@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Http\Library\ApiHelpers;
 use App\Interfaces\AddressRepositoryInterface;
 use App\Interfaces\CloudinaryRepositoryInterface;
 use App\Interfaces\WarehouseRepositoryInterface;
@@ -16,6 +17,7 @@ use InvalidArgumentException;
 
 class WarehouseRepository extends BaseRepository implements WarehouseRepositoryInterface
 {
+    use ApiHelpers;
     /**
      * @var Model
      */
@@ -54,29 +56,23 @@ class WarehouseRepository extends BaseRepository implements WarehouseRepositoryI
         $sort = $request->sort;
         $city = $request->city;
         $search = $request->search;
-        $userId = $request->user()->id;
-        $whitelist = $this->warehouseWhitelist->select('user_id','warehouse_id')->where('user_id', $userId)->get();
-        if (count($whitelist) > 0) {
-            $warehouseWhitelist = collect($whitelist)->pluck('warehouse_id')->unique()->all();
-            $data = $this->model->with(['addresses.city' => function($q) {
-                $q->select('id','name','meta');
-            }, 'addresses.district' => function($q) {
-                $q->select('id','name','meta');
-            }, 'addresses.province' => function($q) {
-                $q->select('id','name','meta');
-            }, 'addresses.village' => function ($q) {
-                $q->select('id','name','meta');
-            }])->whereIn('id', $warehouseWhitelist);
-        } else {
-            $data = $this->model->with(['addresses.city' => function($q) {
-                $q->select('id','name','meta');
-            }, 'addresses.district' => function($q) {
-                $q->select('id','name','meta');
-            }, 'addresses.province' => function($q) {
-                $q->select('id','name','meta');
-            }, 'addresses.village' => function ($q) {
-                $q->select('id','name','meta');
-            }]);
+        $user = $request->user();
+        $data = $this->model->with(['addresses.city' => function($q) {
+            $q->select('id','name','meta');
+        }, 'addresses.district' => function($q) {
+            $q->select('id','name','meta');
+        }, 'addresses.province' => function($q) {
+            $q->select('id','name','meta');
+        }, 'addresses.village' => function ($q) {
+            $q->select('id','name','meta');
+        }]);
+
+        if ($this->isDropshipper($user)) {
+            $whitelist = $this->warehouseWhitelist->select('user_id','warehouse_id')->where('user_id', $user->id)->get();
+            if (count($whitelist) > 0) {
+                $warehouseWhitelist = collect($whitelist)->pluck('warehouse_id')->unique()->all();
+                $data = $data->whereIn('id', $warehouseWhitelist);
+            }
         }
 
         if ($sort) {
@@ -167,7 +163,16 @@ class WarehouseRepository extends BaseRepository implements WarehouseRepositoryI
     public function searchWarehouse($request)
     {
         $search = $request->search;
+        $user = $request->user();
         $data = $this->model;
+
+        if ($this->isDropshipper($user)) {
+            $whitelist = $this->warehouseWhitelist->select('user_id','warehouse_id')->where('user_id', $user->id)->get();
+            if (count($whitelist) > 0) {
+                $warehouseWhitelist = collect($whitelist)->pluck('warehouse_id')->unique()->all();
+                $data = $data->whereIn('id', $warehouseWhitelist);
+            }
+        }
 
         if ($search) {
             $data = $data->where('name', 'ilike', "%$search%")->orWhere('address', 'ilike', "%$search%")
@@ -177,7 +182,6 @@ class WarehouseRepository extends BaseRepository implements WarehouseRepositoryI
                     });
                 });
         }
-
         return $data->orderBy('name', 'ASC')->limit(10)->get();
     }
 
@@ -245,5 +249,17 @@ class WarehouseRepository extends BaseRepository implements WarehouseRepositoryI
         }
 
         DB::commit();
+    }
+
+    /**
+     * get warehouse by product list
+     * @param array $productIds
+     * @return array $warehouseIds
+     */
+    public function getWarehouseByProductList(array $productIds) : array
+    {
+        $p = $this->product->select('warehouse_id')->whereIn('id', $productIds)->get();
+        $warehouseIds = collect($p)->pluck('warehouse_id')->unique()->all();
+        return $warehouseIds;
     }
 }

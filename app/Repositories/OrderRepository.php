@@ -2,8 +2,11 @@
 
 namespace App\Repositories;
 
+use App\Http\Library\ApiHelpers;
 use App\Interfaces\CartRepositoryInterface;
 use App\Interfaces\OrderRepositoryInterface;
+use App\Interfaces\UserRepositoryInterface;
+use App\Interfaces\WarehouseRepositoryInterface;
 use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Repositories\BaseRepository;
@@ -13,23 +16,33 @@ use Illuminate\Support\Facades\DB;
 
 class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 {
+    use ApiHelpers;
     /**
      * @var Model
      */
     protected $model;
     protected $cartRepo;
+    protected $userRepo;
+    protected $warehouseRepo;
 
     /**
      * BaseRepository constructor.
      *
      * @param Model $model
      */
-    public function __construct(Order $model, CartRepositoryInterface $cartRepo)
+    public function __construct(
+        Order $model,
+        CartRepositoryInterface $cartRepo,
+        UserRepositoryInterface $userRepo,
+        WarehouseRepositoryInterface $warehouseRepo
+    )
     {
         $this->model = $model;
         $this->orderProduct = new OrderProduct();
         $this->cloudinary = new CloudinaryRepository();
         $this->cartRepo = $cartRepo;
+        $this->userRepo = $userRepo;
+        $this->warehouseRepo = $warehouseRepo;
     }
 
     public function createOrder(array $payload)
@@ -53,7 +66,9 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
                 'customer_id' => $payload['customer_id']
             ]);
 
-            $payload = $cartRepo->map(function($q) use ($order) {
+            $user = $this->userRepo->findById($payload['user_id']);
+
+            $payload = collect($cartRepo)->map(function($q) use ($order) {
                 $data = [
                     'product_id' => $q->product->id,
                     'single_price' => $q->product->price_dropship,
@@ -63,10 +78,23 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
                 return $data;
             })->all();
 
+            $hasMultiWarehouse = $this->cartRepo->hasMultiWarehouse(collect($payload)->pluck('product_id')->all());
+            if ($hasMultiWarehouse) {
+                DB::rollBack();
+                throw new Exception('Please pick product only in 1 warehouse');
+            }
+
+            if ($this->isDropshipper($user)) {
+                $warehouseIds = $this->warehouseRepo->getWarehouseByProductList(collect($payload)->pluck('product_id')->all());
+                $warehouse = $this->warehouseRepo->findById($warehouseIds[0]);
+                $canAccessWarehouse = $this->isCanAccessWarehouse($user, $warehouse);
+                if (!$canAccessWarehouse) {
+                    DB::rollBack();
+                    throw new Exception("User must be whitelisted on warehouse: $warehouse->name");
+                }
+            }
             $order->orderProducts()->createMany($payload);
-
             DB::commit();
-
             return $order;
         }
         throw new Exception('cart not found');
