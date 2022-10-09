@@ -5,7 +5,8 @@ return [
         'admin',
         'basic',
         'customer.create',
-        'product.create'
+        'product.create',
+        'store.read'
     ],
     'cashier' => [
         'basic',
@@ -23,12 +24,14 @@ return [
         'cart.remove',
         'customer.create',
         'dropshipper',
+        'store.read'
     ],
     'super_admin' => [
         'admin',
         'basic',
         'product.create',
         'super_admin',
+        'store.read'
     ],
     'warehouse_officer' => [
         'basic',
