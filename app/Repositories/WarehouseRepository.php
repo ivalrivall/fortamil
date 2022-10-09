@@ -54,13 +54,10 @@ class WarehouseRepository extends BaseRepository implements WarehouseRepositoryI
         $sort = $request->sort;
         $city = $request->city;
         $search = $request->search;
-
-        $whitelist = $this->warehouseWhitelist->select('user_id','warehouse_id')->get();
-
-        $userWarehouseWhitelist = collect($whitelist)->pluck('user_id')->all();
-        $warehouseWhitelist = collect($whitelist)->pluck('user_id')->all();
-
-        if (in_array($request->user()->id, $userWarehouseWhitelist)) {
+        $userId = $request->user()->id;
+        $whitelist = $this->warehouseWhitelist->select('user_id','warehouse_id')->where('user_id', $userId)->get();
+        if (count($whitelist) > 0) {
+            $warehouseWhitelist = collect($whitelist)->pluck('warehouse_id')->unique()->all();
             $data = $this->model->with(['addresses.city' => function($q) {
                 $q->select('id','name','meta');
             }, 'addresses.district' => function($q) {
@@ -81,7 +78,6 @@ class WarehouseRepository extends BaseRepository implements WarehouseRepositoryI
                 $q->select('id','name','meta');
             }]);
         }
-
 
         if ($sort) {
             $sort = explode('|', $sort);
