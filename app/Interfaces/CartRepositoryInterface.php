@@ -12,4 +12,5 @@ interface CartRepositoryInterface extends BaseRepositoryInterface
     public function addProduct(int $productId, int $qty, int $userId): ?Model;
     public function emptyCart(int $userId);
     public function getCartByArrayId(array $cartId): ?Collection;
+    public function hasMultiWarehouse(array $productIds) : bool;
 }

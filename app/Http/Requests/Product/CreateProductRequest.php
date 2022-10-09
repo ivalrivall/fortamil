@@ -35,6 +35,7 @@ class CreateProductRequest extends FormRequest
             'weight' => 'required|numeric',
             'warehouse_id' => 'required|numeric',
             'pictures' => 'required|array',
+            'pictures.*' => 'required|file',
             'category_id' => 'required|numeric'
         ];
     }

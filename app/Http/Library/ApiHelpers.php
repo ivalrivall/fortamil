@@ -2,11 +2,14 @@
 
 namespace App\Http\Library;
 
+use App\Models\User;
+use App\Models\Warehouse;
+use App\Models\WarehouseWhitelist;
 use Illuminate\Http\JsonResponse;
 
 trait ApiHelpers
 {
-    protected function isSuperAdmin($user): bool
+    protected function isSuperAdmin(User $user): bool
     {
         if (!empty($user)) {
             return $user->tokenCan('super_admin');
@@ -15,7 +18,7 @@ trait ApiHelpers
         return false;
     }
 
-    protected function isAdmin($user): bool
+    protected function isAdmin(User $user): bool
     {
         if (!empty($user)) {
             return $user->tokenCan('admin');
@@ -24,7 +27,7 @@ trait ApiHelpers
         return false;
     }
 
-    protected function isDropshipper($user): bool
+    protected function isDropshipper(User $user): bool
     {
 
         if (!empty($user)) {
@@ -34,7 +37,7 @@ trait ApiHelpers
         return false;
     }
 
-    protected function isWarehouseOfficer($user): bool
+    protected function isWarehouseOfficer(User $user): bool
     {
         if (!empty($user)) {
             return $user->tokenCan('warehouse_officer');
@@ -66,5 +69,16 @@ trait ApiHelpers
     {
         $slug = strtolower(trim(preg_replace('/[\s-]+/', $delimiter, preg_replace('/[^A-Za-z0-9-]+/', $delimiter, preg_replace('/[&]/', 'and', preg_replace('/[\']/', '', iconv('UTF-8', 'ASCII//TRANSLIT', $str))))), $delimiter));
         return $slug;
+    }
+
+    protected function isCanAccessWarehouse(User $user, Warehouse $warehouse): bool
+    {
+        $warehouseHasWhitelist = WarehouseWhitelist::where('warehouse_id', $warehouse->id)->exists();
+        if ($warehouseHasWhitelist) {
+            return WarehouseWhitelist::where('warehouse_id', $warehouse->id)
+                ->where('user_id', $user->id)
+                ->exists();
+        }
+        return true;
     }
 }

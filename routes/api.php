@@ -15,6 +15,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RegionController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\StoreController;
+use App\Http\Controllers\TestController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WarehouseController;
 
@@ -89,6 +90,9 @@ Route::group(['middleware' => ['auth:sanctum', 'ability:basic']], function () {
     // STORE
     Route::post('store', [StoreController::class, 'create'])->middleware(['ability:store.create']);
     Route::get('store/paginate', [StoreController::class, 'paginate'])->middleware(['ability:store.read']);
+
+    // TEST
+    Route::resource('test', TestController::class);
 
     // UPLOAD
     Route::post('upload', [CloudinaryController::class, 'upload']);

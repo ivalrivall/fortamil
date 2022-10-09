@@ -2,9 +2,11 @@
 
 namespace App\Repositories;
 
+use App\Http\Library\ApiHelpers;
 use App\Interfaces\CartRepositoryInterface;
 use App\Interfaces\ProductRepositoryInterface;
 use App\Interfaces\UserRepositoryInterface;
+use App\Interfaces\WarehouseRepositoryInterface;
 use App\Models\Cart;
 use App\Models\Product;
 use App\Models\User;
@@ -15,23 +17,31 @@ use Illuminate\Database\Eloquent\Model;
 
 class CartRepository extends BaseRepository implements CartRepositoryInterface
 {
+    use ApiHelpers;
     /**
      * @var Model
      */
     protected $model;
     protected $product;
     protected $user;
+    protected $warehouseRepo;
 
     /**
      * BaseRepository constructor.
      *
      * @param Model $model
      */
-    public function __construct(Cart $model, ProductRepositoryInterface $product, UserRepositoryInterface $user)
+    public function __construct(
+        Cart $model,
+        ProductRepositoryInterface $product,
+        UserRepositoryInterface $user,
+        WarehouseRepositoryInterface $warehouseRepo
+    )
     {
         $this->model = $model;
         $this->product = $product;
         $this->user = $user;
+        $this->warehouseRepo = $warehouseRepo;
     }
 
     /**
@@ -67,7 +77,16 @@ class CartRepository extends BaseRepository implements CartRepositoryInterface
         if (!$isAvailable) {
             throw new Exception('Stock of product not available');
         }
-        $cart = $this->hasProductOnUserCart($productId, $userId);
+
+        $carts = $this->model->select('product_id')->where('user_id', $userId)->get();
+        if (count($carts) > 0) {
+            $hasMulti = $this->hasMultiWarehouse(collect($carts)->pluck('product_id')->all());
+            if ($hasMulti) {
+                throw new Exception('Please pick product only in 1 warehouse');
+            }
+        }
+
+        $cart = $this->hasSameProductOnUserCart($productId, $userId);
         if ($cart) {
             $quantity = $qty + $cart->quantity;
             $this->update($cart->id, [
@@ -113,7 +132,7 @@ class CartRepository extends BaseRepository implements CartRepositoryInterface
      * @param int $userId
      * @return Model
      */
-    public function hasProductOnUserCart(int $productId, int $userId): ?Model
+    public function hasSameProductOnUserCart(int $productId, int $userId): ?Model
     {
         $cart = $this->model->where('product_id', $productId)->where('user_id', $userId)->first();
         return $cart;
@@ -128,5 +147,18 @@ class CartRepository extends BaseRepository implements CartRepositoryInterface
     {
         $cart = $this->model->whereIn('id', $cartId)->get();
         return $cart;
+    }
+
+    /**
+     * validate cart on other warehouse
+     * @return bool
+     */
+    public function hasMultiWarehouse(array $productIds) : bool
+    {
+        $warehouseIds = $this->warehouseRepo->getWarehouseByProductList($productIds);
+        if (count($warehouseIds) > 1) {
+            return true;
+        }
+        return false;
     }
 }
