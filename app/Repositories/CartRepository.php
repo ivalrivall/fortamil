@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Interfaces\CartRepositoryInterface;
 use App\Interfaces\ProductRepositoryInterface;
 use App\Interfaces\UserRepositoryInterface;
+use App\Interfaces\WarehouseRepositoryInterface;
 use App\Models\Cart;
 use App\Models\Product;
 use App\Models\User;
@@ -21,17 +22,24 @@ class CartRepository extends BaseRepository implements CartRepositoryInterface
     protected $model;
     protected $product;
     protected $user;
+    protected $warehouseRepo;
 
     /**
      * BaseRepository constructor.
      *
      * @param Model $model
      */
-    public function __construct(Cart $model, ProductRepositoryInterface $product, UserRepositoryInterface $user)
+    public function __construct(
+        Cart $model,
+        ProductRepositoryInterface $product,
+        UserRepositoryInterface $user,
+        WarehouseRepositoryInterface $warehouseRepo
+    )
     {
         $this->model = $model;
         $this->product = $product;
         $this->user = $user;
+        $this->warehouseRepo = $warehouseRepo;
     }
 
     /**
@@ -66,6 +74,13 @@ class CartRepository extends BaseRepository implements CartRepositoryInterface
         $isAvailable = $this->product->checkStockIsAvailable($productId, $qty);
         if (!$isAvailable) {
             throw new Exception('Stock of product not available');
+        }
+        $carts = $this->model->select('product_id')->where('user_id', $userId)->get();
+        if (count($carts) > 0) {
+            $warehouseIds = $this->warehouseRepo->getWarehouseByProductList(collect($carts)->pluck('product_id')->all());
+            if (count($warehouseIds) > 1) {
+                throw new Exception('Please pick product only in 1 warehouse');
+            }
         }
         $cart = $this->hasProductOnUserCart($productId, $userId);
         if ($cart) {
