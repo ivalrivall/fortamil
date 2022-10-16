@@ -36,12 +36,12 @@ class NotificationRepository extends BaseRepository implements NotificationRepos
 
     public function unread(int $notifId)
     {
-        return $this->model->update($notifId, ['read' => false]);
+        return $this->update($notifId, ['read' => false]);
     }
 
     public function read(int $notifId)
     {
-        return $this->model->update($notifId, ['read' => true]);
+        return $this->update($notifId, ['read' => true]);
     }
 
     public function readAll(int $userId)
