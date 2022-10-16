@@ -21,10 +21,10 @@ class NotificationController extends Controller
         $this->notif = $notif;
     }
 
-    public function paginateUserNotif(BasePaginateRequest $request, $userId) : JsonResponse
+    public function paginateUserNotif(BasePaginateRequest $request) : JsonResponse
     {
         $validated = $request->validated();
-        $notif = $this->notif->getNotifByUserPaginate($request->merge($validated), $userId);
+        $notif = $this->notif->getNotifByUserPaginate($request->merge($validated), $request->user()->id);
         return $this->onSuccess($notif);
     }
 

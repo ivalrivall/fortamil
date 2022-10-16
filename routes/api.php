@@ -63,7 +63,7 @@ Route::group(['middleware' => ['auth:sanctum', 'ability:basic']], function () {
     Route::get('marketplace', [MarketplaceController::class, 'getAll']);
 
     // NOTIFICATION
-    Route::post('notif/{userId}/paginate', [NotificationController::class, 'paginateUserNotif']);
+    Route::get('notif/paginate', [NotificationController::class, 'paginateUserNotif']);
     Route::get('notif/read-all', [NotificationController::class, 'readAll']);
     Route::get('notif/{notifId}/read', [NotificationController::class, 'markRead']);
     Route::get('notif/{notifId}/unread', [NotificationController::class, 'markUnread']);
