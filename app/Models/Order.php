@@ -14,7 +14,7 @@ class Order extends Model
 
     protected $guarded = ['deleted_at'];
 
-    protected $hidden = ['deleted_at', 'user_id', 'store_id', 'customer_id'];
+    protected $hidden = ['deleted_at', 'user_id', 'store_id', 'customer_id', 'warehouse_id'];
 
     public function store()
     {
@@ -54,5 +54,10 @@ class Order extends Model
     public function customer()
     {
         return $this->belongsTo(Customer::class);
+    }
+
+    public function warehouse()
+    {
+        return $this->belongsTo(Warehouse::class);
     }
 }

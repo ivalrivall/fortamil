@@ -32,7 +32,7 @@ class Product extends Model
 
     public function warehouse()
     {
-        return $this->belongsTo(Warehouse::class, 'product_id');
+        return $this->belongsTo(Warehouse::class, 'warehouse_id');
     }
 
     public function carts()

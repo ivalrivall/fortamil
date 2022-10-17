@@ -37,4 +37,9 @@ class Warehouse extends Model
     {
         return $this->belongsToMany(User::class, 'warehouse_whitelists', 'warehouse_id', 'user_id');
     }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'warehouse_id');
+    }
 }

@@ -63,7 +63,8 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
                 'number_resi' => $payload['number_resi'],
                 'marketplace_number_invoice' => $payload['marketplace_number_invoice'],
                 'marketplace_picture_label' => $pictureUrl,
-                'customer_id' => $payload['customer_id']
+                'customer_id' => $payload['customer_id'],
+                'warehouse_id' => $payload['warehouse_id']
             ]);
 
             $user = $this->userRepo->findById($payload['user_id']);
@@ -141,5 +142,26 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         }
 
         return $data->simplePaginate($per_page);
+    }
+
+    /**
+     * get detail order
+     * @param $orderId
+     */
+    public function getDetailOrder($orderId)
+    {
+        $order = $this->model->where('id', $orderId)->with([
+            'store',
+            'customer',
+            'warehouse',
+            'orderProducts.product.category',
+            'orderProducts.product.pictures' => function($q) {
+                $q->select('product_id','path','is_featured','thumbnail_path');
+            },
+        ])->first();
+        if (!$order) {
+            throw new Exception('Order not found');
+        }
+        return $order;
     }
 }
