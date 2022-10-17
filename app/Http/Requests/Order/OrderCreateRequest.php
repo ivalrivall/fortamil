@@ -40,7 +40,8 @@ class OrderCreateRequest extends FormRequest
             'customer_recipient_phone' => 'required|numeric',
             'notes' => 'present|string|nullable',
             'cart_id' => 'present|array|min:1',
-            'cart_id.*' => 'required|numeric|distinct'
+            'cart_id.*' => 'required|numeric|distinct',
+            'warehouse_id' => 'required|numeric'
         ];
     }
 }

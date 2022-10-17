@@ -12,7 +12,7 @@ class OrderProduct extends Model
 
     protected $fillable = ['product_id', 'single_price', 'order_id', 'quantity'];
 
-    protected $hidden = ['deleted_at', 'created_at', 'updated_at'];
+    protected $hidden = ['deleted_at', 'created_at', 'updated_at', 'product_id', 'order_id'];
 
     public function product()
     {

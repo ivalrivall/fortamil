@@ -69,8 +69,9 @@ Route::group(['middleware' => ['auth:sanctum', 'ability:basic']], function () {
     Route::get('notif/{notifId}/unread', [NotificationController::class, 'markUnread']);
 
     // ORDER
-    Route::post('order', [OrderController::class, 'create'])->middleware(['ability:dropshipper,admin']);
-    Route::get('order/paginate', [OrderController::class, 'getUserOrder'])->middleware(['ability:dropshipper,admin']);
+    Route::post('order', [OrderController::class, 'create'])->middleware(['ability:dropshipper,admin,super_admin']);
+    Route::get('order/paginate', [OrderController::class, 'getUserOrder'])->middleware(['ability:dropshipper,admin,super_admin']);
+    Route::get('order/{orderId}', [OrderController::class, 'getDetailOrder'])->middleware(['ability:dropshipper,admin,super_admin,warehouse_officer']);
 
     // PAYMENT METHOD
     Route::get('payment-method', [PaymentMethodController::class, 'getAll']);

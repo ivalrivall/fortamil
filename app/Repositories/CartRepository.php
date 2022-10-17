@@ -92,7 +92,11 @@ class CartRepository extends BaseRepository implements CartRepositoryInterface
             $this->update($cart->id, [
                 'quantity' => $quantity
             ]);
-            $result = $this->findById($cart->id);
+            try {
+                $result = $this->findById($cart->id);
+            } catch (\Throwable $th) {
+                throw new Exception('Cart not found');
+            }
         } else {
             $result = $this->create([
                 'product_id' => $productId,

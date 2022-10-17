@@ -61,7 +61,8 @@ class OrderController extends Controller
             'marketplace_number_invoice' => $validated['marketplace_number_invoice'],
             'marketplace_picture_label' => $request->file('marketplace_picture_label'),
             'customer_id' => $customer->id,
-            'cart_id' => $validated['cart_id']
+            'cart_id' => $validated['cart_id'],
+            'warehouse_id' => $validated['warehouse_id']
         ]);
 
         if (is_string($validated['notes']) && $validated['notes'] !== null) {
@@ -83,6 +84,19 @@ class OrderController extends Controller
         $mergedRequest = $request->merge(array_merge($validated, ['user_id' => $request->user()->id]));
         $order = $this->order->getUserOrder($mergedRequest);
 
+        return $this->onSuccess($order, 'Order fetched');
+    }
+
+    /**
+     * get detail order
+     */
+    public function getDetailOrder($orderId) : JsonResponse
+    {
+        try {
+            $order = $this->order->getDetailOrder($orderId);
+        } catch (\Throwable $th) {
+            return $this->onError($th->getMessage());
+        }
         return $this->onSuccess($order, 'Order fetched');
     }
 }

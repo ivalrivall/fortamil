@@ -7,6 +7,7 @@ use App\Interfaces\ProductRepositoryInterface;
 use App\Models\PictureProduct;
 use App\Models\Product;
 use App\Repositories\BaseRepository;
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 
 class ProductRepository extends BaseRepository implements ProductRepositoryInterface
@@ -61,7 +62,11 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
 
     public function checkStockIsAvailable(int $productId, int $quantity): bool
     {
-        $product = $this->findById($productId);
+        try {
+            $product = $this->findById($productId);
+        } catch (\Throwable $th) {
+            throw new Exception('Product not found');
+        }
         if ($product) {
             $stock = $product->stock;
             if ($quantity > $stock) {
