@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Http\Library\ApiHelpers;
 use App\Interfaces\CartRepositoryInterface;
+use App\Interfaces\NotificationRepositoryInterface;
 use App\Interfaces\OrderRepositoryInterface;
 use App\Interfaces\UserRepositoryInterface;
 use App\Interfaces\WarehouseRepositoryInterface;
@@ -24,6 +25,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
     protected $cartRepo;
     protected $userRepo;
     protected $warehouseRepo;
+    protected $notifRepo;
 
     /**
      * BaseRepository constructor.
@@ -34,7 +36,8 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         Order $model,
         CartRepositoryInterface $cartRepo,
         UserRepositoryInterface $userRepo,
-        WarehouseRepositoryInterface $warehouseRepo
+        WarehouseRepositoryInterface $warehouseRepo,
+        NotificationRepositoryInterface $notifRepo
     )
     {
         $this->model = $model;
@@ -43,6 +46,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $this->cartRepo = $cartRepo;
         $this->userRepo = $userRepo;
         $this->warehouseRepo = $warehouseRepo;
+        $this->notifRepo = $notifRepo;
     }
 
     public function createOrder(array $payload)
@@ -162,6 +166,46 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         if (!$order) {
             throw new Exception('Order not found');
         }
+        return $order;
+    }
+
+    /**
+     * change status order
+     * @param $orderId
+     * @param string $status
+     */
+    public function changeStatusOrder($orderId, string $status)
+    {
+        try {
+            $order = $this->model->where('id', $orderId)->update(['status' => $status]);
+        } catch (\Throwable $th) {
+            throw new Exception('Failed update status order to '.$status);
+        }
+        return $order;
+    }
+
+    /**
+     * cancel order
+     */
+    public function cancelOrderRepo($orderId, $notes)
+    {
+        try {
+            $order = $this->findById($orderId);
+        } catch (\Throwable $th) {
+            throw new Exception('Order not found');
+        }
+        $payloadNotif = [
+            'title' => 'Order dibatalkan',
+            'type' => 'system-info',
+            'icon' => 'ring',
+            'user_id' => $order->user_id,
+            'priority' => 'high',
+            'description' => 'Order anda ditolak dengan alasan: '.$notes,
+            'read' => false
+        ];
+        $this->notifRepo->create($payloadNotif);
+        $order->status = 'cancel';
+        $order->save();
         return $order;
     }
 }
