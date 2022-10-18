@@ -185,9 +185,9 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
     }
 
     /**
-     * cancel order
+     * reject order
      */
-    public function cancelOrderRepo($orderId, $notes)
+    public function rejectOrderRepo($orderId, $notes)
     {
         try {
             $order = $this->findById($orderId);
@@ -195,7 +195,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
             throw new Exception('Order not found');
         }
         $payloadNotif = [
-            'title' => 'Order dibatalkan',
+            'title' => 'Order ditolak',
             'type' => 'system-info',
             'icon' => 'ring',
             'user_id' => $order->user_id,
@@ -204,7 +204,32 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
             'read' => false
         ];
         $this->notifRepo->create($payloadNotif);
-        $order->status = 'cancel';
+        $order->status = 'reject';
+        $order->save();
+        return $order;
+    }
+
+    /**
+     * accept order
+     */
+    public function acceptOrderRepo($orderId)
+    {
+        try {
+            $order = $this->findById($orderId);
+        } catch (\Throwable $th) {
+            throw new Exception('Order not found');
+        }
+        $payloadNotif = [
+            'title' => 'Order diterima',
+            'type' => 'system-info',
+            'icon' => 'ring',
+            'user_id' => $order->user_id,
+            'priority' => 'high',
+            'description' => 'Order sudah disetujui dan akan segera diproses',
+            'read' => false
+        ];
+        $this->notifRepo->create($payloadNotif);
+        $order->status = 'on-progress';
         $order->save();
         return $order;
     }

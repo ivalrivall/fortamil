@@ -101,12 +101,25 @@ class OrderController extends Controller
     }
 
     /**
-     * cancel order
+     * reject order
      */
-    public function cancelOrder(Request $request, $orderId) : JsonResponse
+    public function rejectOrder(Request $request, $orderId) : JsonResponse
     {
         try {
-            $order = $this->order->cancelOrderRepo($orderId, $request->notes);
+            $order = $this->order->rejectOrderRepo($orderId, $request->notes);
+        } catch (\Throwable $th) {
+            return $this->onError($th->getMessage());
+        }
+        return $this->onSuccess($order, 'OK');
+    }
+
+    /**
+     * accpet order
+     */
+    public function acceptOrder($orderId) : JsonResponse
+    {
+        try {
+            $order = $this->order->acceptOrderRepo($orderId);
         } catch (\Throwable $th) {
             return $this->onError($th->getMessage());
         }

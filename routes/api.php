@@ -74,7 +74,8 @@ Route::prefix('v1')->group(function() {
         Route::post('order', [OrderController::class, 'create'])->middleware(['ability:dropshipper,admin,super_admin']);
         Route::get('order/paginate', [OrderController::class, 'getUserOrder'])->middleware(['ability:dropshipper,admin,super_admin']);
         Route::get('order/{orderId}', [OrderController::class, 'getDetailOrder'])->middleware(['ability:dropshipper,admin,super_admin,warehouse_officer']);
-        Route::post('order/{orderId}/cancel', [OrderController::class, 'cancelOrder'])->middleware(['ability:admin']);
+        Route::post('order/{orderId}/reject', [OrderController::class, 'rejectOrder'])->middleware(['ability:admin']);
+        Route::get('order/{orderId}/accept', [OrderController::class, 'acceptOrder'])->middleware(['ability:admin']);
 
         // PAYMENT METHOD
         Route::get('payment-method', [PaymentMethodController::class, 'getAll']);

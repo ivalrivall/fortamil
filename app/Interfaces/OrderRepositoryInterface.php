@@ -10,5 +10,6 @@ interface OrderRepositoryInterface extends BaseRepositoryInterface
     public function getUserOrder($payload);
     public function getDetailOrder($orderId);
     public function changeStatusOrder($orderId, string $status);
-    public function cancelOrderRepo($orderId, $notes);
+    public function rejectOrderRepo($orderId, $notes);
+    public function acceptOrderRepo($orderId);
 }
