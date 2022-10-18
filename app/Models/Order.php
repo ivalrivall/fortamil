@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 /**
- * @param status: waiting, on-progress, deliver, arrived, success, failed, cancel, complaint, return
+ * @param status: waiting, reject, on-progress, deliver, arrived, success, failed, cancel, complaint, return
  */
 class Order extends Model
 {

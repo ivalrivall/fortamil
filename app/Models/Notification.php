@@ -12,7 +12,7 @@ class Notification extends Model
 
     protected $hidden = ['deleted_at','created_at','user_id'];
 
-    protected $fillable = ['read'];
+    protected $guarded = [];
 
     public function user()
     {

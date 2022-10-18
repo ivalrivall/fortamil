@@ -70,7 +70,7 @@ class OrderController extends Controller
             $this->note->saveOrderNote($order, $notes);
         }
 
-        return $this->onSuccess($order, 'Order created');
+        return $this->onSuccess($order, 'OK');
     }
 
 
@@ -84,7 +84,7 @@ class OrderController extends Controller
         $mergedRequest = $request->merge(array_merge($validated, ['user_id' => $request->user()->id]));
         $order = $this->order->getUserOrder($mergedRequest);
 
-        return $this->onSuccess($order, 'Order fetched');
+        return $this->onSuccess($order, 'OK');
     }
 
     /**
@@ -97,6 +97,32 @@ class OrderController extends Controller
         } catch (\Throwable $th) {
             return $this->onError($th->getMessage());
         }
-        return $this->onSuccess($order, 'Order fetched');
+        return $this->onSuccess($order, 'OK');
+    }
+
+    /**
+     * reject order
+     */
+    public function rejectOrder(Request $request, $orderId) : JsonResponse
+    {
+        try {
+            $order = $this->order->rejectOrderRepo($orderId, $request->notes);
+        } catch (\Throwable $th) {
+            return $this->onError($th->getMessage());
+        }
+        return $this->onSuccess($order, 'OK');
+    }
+
+    /**
+     * accpet order
+     */
+    public function acceptOrder($orderId) : JsonResponse
+    {
+        try {
+            $order = $this->order->acceptOrderRepo($orderId);
+        } catch (\Throwable $th) {
+            return $this->onError($th->getMessage());
+        }
+        return $this->onSuccess($order, 'OK');
     }
 }
