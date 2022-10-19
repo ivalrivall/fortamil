@@ -13,4 +13,5 @@ interface UserRepositoryInterface extends BaseRepositoryInterface
     public function createUser($request);
     public function getUserById($id);
     public function editUserService($payload);
+    public function getUsersByRoleId($roleId);
 }

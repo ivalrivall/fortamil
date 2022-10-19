@@ -7,6 +7,7 @@ use App\Http\Requests\BasePaginateRequest;
 use App\Interfaces\NotificationRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class NotificationController extends Controller
 {

@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Interfaces\NotificationRepositoryInterface;
 use App\Models\Notification;
 use App\Repositories\BaseRepository;
+use Carbon\Carbon;
 use Kutia\Larafirebase\Facades\Larafirebase;
 
 class NotificationRepository extends BaseRepository implements NotificationRepositoryInterface
@@ -34,27 +35,29 @@ class NotificationRepository extends BaseRepository implements NotificationRepos
         return Larafirebase::fromArray($payload)->sendMessage($fcmToken);
     }
 
-    public function unread(int $notifId)
+    public function unread($notifId)
     {
-        return $this->update($notifId, ['read' => false]);
+        return $this->model->where('id', $notifId)->update(['read_at' => null]);
     }
 
-    public function read(int $notifId)
+    public function read($notifId)
     {
-        return $this->update($notifId, ['read' => true]);
+        return $this->model->where('id', $notifId)->update(['read_at' => Carbon::now()]);
     }
 
     public function readAll(int $userId)
     {
         return $this->model
-            ->where('user_id', $userId)
-            ->update(['read' => true]);
+            ->where('notifiable_type', 'App\Models\User')
+            ->where('notifiable_id', $userId)
+            ->update(['read_at' => Carbon::now()]);
     }
 
     public function deleteAll(int $userId)
     {
         return $this->model
-            ->where('user_id', $userId)
+            ->where('notifiable_type', 'App\Models\User')
+            ->where('notifiable_id', $userId)
             ->delete();
     }
 
@@ -68,7 +71,8 @@ class NotificationRepository extends BaseRepository implements NotificationRepos
         $search = $request->search;
 
         $data = $this->model
-            ->where('user_id', $userId);
+            ->where('notifiable_type', 'App\Models\User')
+            ->where('notifiable_id', $userId);
 
         if ($search) {
             $data->where(function($q) use ($search) {
