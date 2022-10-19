@@ -10,10 +10,12 @@ use App\Interfaces\UserRepositoryInterface;
 use App\Interfaces\WarehouseRepositoryInterface;
 use App\Models\Order;
 use App\Models\OrderProduct;
+use App\Notifications\OrderCreated;
 use App\Repositories\BaseRepository;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 
 class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 {
@@ -99,6 +101,28 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
                 }
             }
             $order->orderProducts()->createMany($payload);
+            try {
+                $admins = $this->userRepo->getUsersByRoleId(1);
+            } catch (\Throwable $th) {
+                throw $th->getMessage();
+            }
+
+            try {
+                $payloadNotif = [
+                    'title' => 'Order dibuat',
+                    'type' => 'App\Notifications\SystemInfo',
+                    'icon' => 'ring',
+                    'notifiable_type' => 'App\Models\User',
+                    'notifiable_id' => $order->user_id,
+                    'data' => json_encode($order),
+                    'priority' => 'high',
+                    'description' => 'Order baru dibuat dengan nomor resi: '.$order->number_resi,
+                ];
+                $this->notifRepo->create($payloadNotif);
+                Notification::sendNow($admins, new OrderCreated($order));
+            } catch (\Throwable $th) {
+                throw $th->getMessage();
+            }
             DB::commit();
             return $order;
         }
@@ -203,12 +227,13 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         }
         $payloadNotif = [
             'title' => 'Order ditolak',
-            'type' => 'system-info',
+            'type' => 'App\Notifications\SystemInfo',
             'icon' => 'ring',
-            'user_id' => $order->user_id,
+            'notifiable_type' => 'App\Models\User',
+            'notifiable_id' => $order->user_id,
             'priority' => 'high',
+            'data' => json_encode($order),
             'description' => 'Order anda ditolak dengan alasan: '.$notes,
-            'read' => false
         ];
         $this->notifRepo->create($payloadNotif);
         $order->status = 'reject';
@@ -228,12 +253,13 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         }
         $payloadNotif = [
             'title' => 'Order diterima',
-            'type' => 'system-info',
+            'type' => 'App\Notifications\SystemInfo',
             'icon' => 'ring',
-            'user_id' => $order->user_id,
+            'notifiable_type' => 'App\Models\User',
+            'notifiable_id' => $order->user_id,
+            'data' => json_encode($order),
             'priority' => 'high',
             'description' => 'Order sudah disetujui dan akan segera diproses',
-            'read' => false
         ];
         $this->notifRepo->create($payloadNotif);
         $order->status = 'on-progress';

@@ -170,4 +170,19 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         }
         return $user;
     }
+
+    /**
+     * get user by role
+     * @param int $roleId
+     */
+    public function getUsersByRoleId($roleId)
+    {
+        try {
+            $users = $this->model->where('role_id', $roleId)->get();
+        } catch (\Throwable $th) {
+            Log::error('error getUsersByRoleId => '. $th->getMessage());
+            throw new InvalidArgumentException('Failed get users by role');
+        }
+        return $users;
+    }
 }
