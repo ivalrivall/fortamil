@@ -26,6 +26,10 @@ class CustomerRepository extends BaseRepository implements CustomerRepositoryInt
         $this->model = $model;
     }
 
+    /**
+     * create if customer doesnt exist, but get customer is exist
+     * save address data of currentcustomers
+     */
     public function createWithAddress($customer, $address): ?Model
     {
         $customer = $this->firstOrCreate($customer, []);
@@ -43,6 +47,20 @@ class CustomerRepository extends BaseRepository implements CustomerRepositoryInt
 
         $customer->addresses()->save($add);
         $customer->latestAddress;
+        return $customer;
+    }
+
+    /**
+     * create customer with auto generated name and phone
+     */
+    public function createWithAutoNameAndPhone(string $customerPlainAddress, $userId): ?Model
+    {
+        $customer = $this->create([
+            'name' => 'auto generate '. random_int(1, 9999999),
+            'phone' => '0123456789',
+            'user_id' => $userId,
+            'plain_shipment_address' => $customerPlainAddress
+        ]);
         return $customer;
     }
 }
