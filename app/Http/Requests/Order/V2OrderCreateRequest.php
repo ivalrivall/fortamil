@@ -4,7 +4,7 @@ namespace App\Http\Requests\Order;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class OrderCreateRequest extends FormRequest
+class V2OrderCreateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -29,7 +29,15 @@ class OrderCreateRequest extends FormRequest
             'marketplace_picture_label' => 'required|file',
             'marketplace_number_invoice' => 'required',
             'number_resi' => 'required|string',
-            'customer_plain_shipment_address' => 'required|string',
+            'customer_name' => 'required|string',
+            'customer_phone' => 'required|numeric',
+            'customer_province_id' => 'required|numeric',
+            'customer_city_id' => 'required|numeric',
+            'customer_district_id' => 'required|numeric',
+            'customer_village_id' => 'required|numeric',
+            'customer_postal_code' => 'required|numeric',
+            'customer_recipient_name' => 'required|string',
+            'customer_recipient_phone' => 'required|numeric',
             'notes' => 'present|string|nullable',
             'cart_id' => 'present|array|min:1',
             'cart_id.*' => 'required|numeric|distinct',

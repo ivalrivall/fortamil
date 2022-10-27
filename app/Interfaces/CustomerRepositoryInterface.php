@@ -10,4 +10,5 @@ interface CustomerRepositoryInterface extends BaseRepositoryInterface
      * create with address.
      */
     public function createWithAddress(array $customer, array $address);
+    public function createWithAutoNameAndPhone(string $customerPlainAddress, $userId);
 }
