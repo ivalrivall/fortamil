@@ -58,7 +58,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $cartRepo = $this->cartRepo->getCartByArrayId($uniqueCarts);
 
         if (count(collect($cartRepo)) > 0) {
-            $pictureUrl = $this->cloudinary->upload(['file' => $payload['marketplace_picture_label']]);
+            $pictureUrl = $this->cloudinary->upload(['file' => $payload['marketplace_picture_label'], 'folder' => 'lbl_mrktplc']);
 
             DB::beginTransaction();
 
