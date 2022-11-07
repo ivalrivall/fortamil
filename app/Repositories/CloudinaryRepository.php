@@ -16,7 +16,13 @@ class CloudinaryRepository implements CloudinaryRepositoryInterface
      */
     public function upload(array $payload) : string
     {
-        $uploadedFileUrl = Cloudinary::upload($payload['file']->getRealPath())->getSecurePath();
+        $options = [];
+        if (isset($payload['folder']) && $payload['folder'] !== '') {
+            $options = [
+                'folder' => $payload['folder']
+            ];
+        }
+        $uploadedFileUrl = Cloudinary::upload($payload['file']->getRealPath(), $options)->getSecurePath();
         return $uploadedFileUrl;
     }
 

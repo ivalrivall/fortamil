@@ -37,7 +37,7 @@ class StoreController extends Controller
 
         $slug = $this->createSlug($request->name);
 
-        $pictureUrl = $this->cloudinary->upload(['file' => $request->file('picture')]);
+        $pictureUrl = $this->cloudinary->upload(['file' => $request->file('picture'), 'folder' => 'store']);
 
         $store = $this->storeRepository->create([
             'name' => $validated['name'],

@@ -10,7 +10,9 @@ use App\Interfaces\CartRepositoryInterface;
 use App\Interfaces\CustomerRepositoryInterface;
 use App\Interfaces\NoteRepositoryInterface;
 use App\Interfaces\OrderRepositoryInterface;
+use App\Interfaces\InvoiceRepositoryInterface;
 use App\Repositories\CustomerRepository;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -22,18 +24,21 @@ class OrderController extends Controller
     private CustomerRepository $customer;
     private NoteRepositoryInterface $note;
     private CartRepositoryInterface $cart;
+    private InvoiceRepositoryInterface $invoice;
 
     public function __construct(
         OrderRepositoryInterface $order,
         CustomerRepositoryInterface $customer,
         NoteRepositoryInterface $note,
-        CartRepositoryInterface $cart
+        CartRepositoryInterface $cart,
+        InvoiceRepositoryInterface $invoice
     )
     {
         $this->order = $order;
         $this->customer = $customer;
         $this->note = $note;
         $this->cart = $cart;
+        $this->invoice = $invoice;
     }
 
     /**
@@ -42,9 +47,10 @@ class OrderController extends Controller
     public function create(OrderCreateRequest $request) : JsonResponse
     {
         $validated = $request->validated();
+        $userId = $request->user()->id;
 
         try {
-            $customer = $this->customer->createWithAutoNameAndPhone($validated['customer_plain_shipment_address'], $request->user()->id);
+            $customer = $this->customer->createWithAutoNameAndPhone($validated['customer_plain_shipment_address'], $userId);
         } catch (\Throwable $th) {
             return $this->onError($th->getMessage());
         }
@@ -52,7 +58,7 @@ class OrderController extends Controller
         try {
             $order = $this->order->createOrder([
                 'store_id' => $validated['store_id'],
-                'user_id' => $request->user()->id,
+                'user_id' => $userId,
                 'number_resi' => $validated['number_resi'],
                 'marketplace_number_invoice' => $validated['marketplace_number_invoice'],
                 'marketplace_picture_label' => $request->file('marketplace_picture_label'),
@@ -65,7 +71,7 @@ class OrderController extends Controller
         }
 
         try {
-            $this->cart->emptyCart($request->user()->id);
+            $this->cart->emptyCart($userId);
         } catch (\Throwable $th) {
             return $this->onError($th->getMessage());
         }
@@ -79,7 +85,17 @@ class OrderController extends Controller
             }
         }
 
-        return $this->onSuccess($order, 'OK');
+        try {
+            $invoice = $this->invoice->makeInvoiceByOrder([
+                'order_id' => $order->id,
+                'payment_method_id' => $validated['payment_method_id'],
+                'user_id' => $userId
+            ]);
+        } catch (\Throwable $th) {
+            return $this->onError($th->getMessage());
+        }
+
+        return $this->onSuccess(array_merge(['order' => $order], ['invoice' => $invoice]), 'OK');
     }
 
 

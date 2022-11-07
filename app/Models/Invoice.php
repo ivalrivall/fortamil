@@ -12,6 +12,9 @@ class Invoice extends Model
 {
     use HasFactory;
 
+    protected $guarded = [];
+    protected $hidden = ['deleted_at'];
+
     public function user()
     {
         return $this->belongsTo(User::class);
