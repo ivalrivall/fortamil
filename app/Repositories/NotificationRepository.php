@@ -27,6 +27,9 @@ class NotificationRepository extends BaseRepository implements NotificationRepos
 
     public function sendNotification(array $payload, array $fcmToken)
     {
+        $notif = $this->model->create([
+            ''
+        ]);
         return Larafirebase::fromArray($payload)->sendNotification($fcmToken);
     }
 

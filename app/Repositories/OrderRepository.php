@@ -101,12 +101,8 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
                 }
             }
             $order->orderProducts()->createMany($payload);
-            try {
-                $admins = $this->userRepo->getUsersByRoleId(1);
-            } catch (\Throwable $th) {
-                throw $th->getMessage();
-            }
 
+            // SEND NOTIF KE USER DROPSHIPPER
             try {
                 $payloadNotif = [
                     'title' => 'Order dibuat',
@@ -119,10 +115,34 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
                     'description' => 'Order baru dibuat dengan nomor resi: '.$order->number_resi,
                 ];
                 $this->notifRepo->create($payloadNotif);
-                Notification::sendNow($admins, new OrderCreated($order));
             } catch (\Throwable $th) {
                 throw $th->getMessage();
             }
+
+            // SEND NOTIF KE USER ADMIN
+            try {
+                $admins = $this->userRepo->getUsersByRoleId(1);
+            } catch (\Throwable $th) {
+                throw $th->getMessage();
+            }
+            foreach ($admins as $key => $value) {
+                try {
+                    $payloadNotif = [
+                        'title' => 'Order dibuat',
+                        'type' => 'App\Notifications\SystemInfo',
+                        'icon' => 'ring',
+                        'notifiable_type' => 'App\Models\User',
+                        'notifiable_id' => $value->id,
+                        'data' => json_encode($order),
+                        'priority' => 'high',
+                        'description' => 'Order baru dibuat dengan nomor resi: '.$order->number_resi,
+                    ];
+                    $this->notifRepo->create($payloadNotif);
+                } catch (\Throwable $th) {
+                    throw $th->getMessage();
+                }
+            }
+            Notification::sendNow($admins, new OrderCreated($order)); // SEND NOTIF KE EMAIL SEMUA ADMIN
             DB::commit();
             return $order;
         }
