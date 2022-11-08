@@ -87,10 +87,9 @@ class OrderController extends Controller
 
         try {
             $invoice = $this->invoice->makeInvoiceByOrder([
-                'order_id' => $order->id,
                 'payment_method_id' => $validated['payment_method_id'],
                 'user_id' => $userId
-            ]);
+            ], $order);
         } catch (\Throwable $th) {
             return $this->onError($th->getMessage());
         }

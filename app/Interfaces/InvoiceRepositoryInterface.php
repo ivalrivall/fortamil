@@ -6,5 +6,5 @@ use App\Interfaces\BaseRepositoryInterface;
 
 interface InvoiceRepositoryInterface extends BaseRepositoryInterface
 {
-    public function makeInvoiceByOrder($payload);
+    public function makeInvoiceByOrder($payload, $order);
 }

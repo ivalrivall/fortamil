@@ -10,6 +10,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\MarketplaceController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RegionController;
@@ -52,11 +53,6 @@ Route::prefix('v1')->group(function() {
             'ability:customer.create,dropshipper'
         ]);
 
-        // PRODUCT
-        Route::post('product', [ProductController::class, 'create'])->middleware(['ability:product.create']);
-        Route::get('product/warehouse', [ProductController::class, 'getProductByWarehouse'])->middleware(['ability:dropshipper,admin']);
-        Route::post('product/{productId}/disable', [ProductController::class, 'disableProduct'])->middleware(['ability:super_admin']);
-
         // LOGOUT
         Route::post('logout', [AuthController::class, 'logout']);
         Route::post('logoutall', [AuthController::class, 'logoutAll']);
@@ -80,7 +76,15 @@ Route::prefix('v1')->group(function() {
         // PAYMENT METHOD
         Route::get('payment-method', [PaymentMethodController::class, 'getAll']);
 
-        // CURRENT PROFILE
+        // PAYMENT
+        Route::post('payment/pay-order',[PaymentController::class, 'payOrder']);
+
+        // PRODUCT
+        Route::post('product', [ProductController::class, 'create'])->middleware(['ability:product.create']);
+        Route::get('product/warehouse', [ProductController::class, 'getProductByWarehouse'])->middleware(['ability:dropshipper,admin']);
+        Route::post('product/{productId}/disable', [ProductController::class, 'disableProduct'])->middleware(['ability:super_admin']);
+
+        // PROFILE
         Route::get('profile', function() { return auth()->user(); });
 
         // REGISTER
