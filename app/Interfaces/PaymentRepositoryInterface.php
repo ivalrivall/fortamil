@@ -6,5 +6,5 @@ use App\Interfaces\BaseRepositoryInterface;
 
 interface PaymentRepositoryInterface extends BaseRepositoryInterface
 {
-    public function makePaymentByOrder($payload);
+    public function payInvoiceOrder($payload);
 }
