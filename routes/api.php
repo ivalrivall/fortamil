@@ -68,7 +68,7 @@ Route::prefix('v1')->group(function() {
 
         // ORDER
         Route::post('order', [OrderController::class, 'create'])->middleware(['ability:dropshipper,admin,super_admin']);
-        Route::get('order/paginate', [OrderController::class, 'getUserOrder'])->middleware(['ability:dropshipper,admin,super_admin']);
+        Route::get('order/paginate', [OrderController::class, 'getUserOrder']);
         Route::get('order/{orderId}', [OrderController::class, 'getDetailOrder'])->middleware(['ability:dropshipper,admin,super_admin,warehouse_officer']);
         Route::post('order/{orderId}/reject', [OrderController::class, 'rejectOrder'])->middleware(['ability:admin']);
         Route::get('order/{orderId}/accept', [OrderController::class, 'acceptOrder'])->middleware(['ability:admin']);

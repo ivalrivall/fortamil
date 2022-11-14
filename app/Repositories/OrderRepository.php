@@ -159,14 +159,10 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $sort = $request->sort;
         $s = $request->search;
         $user = $request->user();
+        $data = $this->model->with(['store.marketplace', 'customer']);
 
         if ($this->isDropshipper($user)) {
-            $data = $this->model->where('user_id', $request->user_id)
-                ->with(['store.marketplace', 'customer']);
-        }
-
-        if ($this->isAdmin($user) || $this->isSuperAdmin($user)){
-            $data = $this->model->with(['store.marketplace', 'customer']);
+            $data = $data->where('user_id', $request->user_id);
         }
 
         if ($s) {
