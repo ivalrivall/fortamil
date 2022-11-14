@@ -37,5 +37,6 @@ return [
         'basic',
         'product.create',
         'warehouse_officer',
+        'product.stock.reduce'
     ],
 ];

@@ -9,6 +9,7 @@ use App\Models\Product;
 use App\Repositories\BaseRepository;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
+use InvalidArgumentException;
 
 class ProductRepository extends BaseRepository implements ProductRepositoryInterface
 {
@@ -85,5 +86,25 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
             return $this->restoreById($data['id']);
         }
         return $this->deleteById($data['id']);
+    }
+
+    /**
+     * reduce stock product
+     */
+    public function reduceProductStockService(array $data)
+    {
+        try {
+            $product = $this->findById($data['id']);
+        } catch (Exception $e) {
+            throw new InvalidArgumentException('Product not found');
+        }
+
+        if ($product->stock >= $data['quantity']) {
+            $product->stock = ($product->stock - $data['quantity']);
+            $product->save();
+        } else {
+            throw new InvalidArgumentException('Total stock not sufficient');
+        }
+        return true;
     }
 }
