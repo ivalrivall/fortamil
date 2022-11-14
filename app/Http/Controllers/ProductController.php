@@ -6,6 +6,7 @@ use App\Http\Library\ApiHelpers;
 use App\Http\Requests\BasePaginateRequest;
 use App\Http\Requests\Product\GetProductByWarehouseRequest;
 use App\Http\Requests\Product\CreateProductRequest;
+use App\Http\Requests\Product\ReduceStockProductRequest;
 use App\Interfaces\CloudinaryRepositoryInterface;
 use App\Interfaces\PictureProductRepositoryInterface;
 use App\Interfaces\ProductRepositoryInterface;
@@ -86,6 +87,21 @@ class ProductController extends Controller
         } catch (Exception $th) {
             Log::error($th->getMessage());
             return $this->onError('Failed change status');
+        }
+    }
+
+    public function reduceStock(ReduceStockProductRequest $request, $productId): JsonResponse
+    {
+        $validated = $request->validated();
+        try {
+            $product = $this->product->reduceProductStockService([
+                'id' => $productId,
+                'quantity' => $validated['quantity'],
+            ]);
+            return $this->onSuccess($product, "Success reduce stock product $productId ");
+        } catch (Exception $th) {
+            Log::error('[reduceStock@ProductContoller]'.$th->getMessage());
+            return $this->onError('Failed reduce stock');
         }
     }
 }

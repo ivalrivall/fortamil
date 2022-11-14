@@ -81,6 +81,7 @@ Route::prefix('v1')->group(function() {
 
         // PRODUCT
         Route::post('product', [ProductController::class, 'create'])->middleware(['ability:product.create']);
+        Route::post('product/{productId}/stock/reduce', [ProductController::class, 'reduceStock'])->middleware(['ability:product.stock.reduce']);
         Route::get('product/warehouse', [ProductController::class, 'getProductByWarehouse'])->middleware(['ability:dropshipper,admin']);
         Route::post('product/{productId}/disable', [ProductController::class, 'disableProduct'])->middleware(['ability:super_admin']);
 
