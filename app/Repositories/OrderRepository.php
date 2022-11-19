@@ -302,11 +302,11 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
             throw new InvalidArgumentException('Order belum di setujui admin');
         }
         if ($orderProduct->scanned >= $orderProduct->quantity) {
-            throw new InvalidArgumentException('Order produk sudah di scan');
+            throw new InvalidArgumentException('Semua jumlah produk tipe ini sudah di scan, silahkan ganti ke produk selanjutnya atau order selanjutnya');
         } else {
             $orderProduct->scanned = $orderProduct->scanned + 1;
             $orderProduct->save();
+            return $orderProduct;
         }
-        return true;
     }
 }
