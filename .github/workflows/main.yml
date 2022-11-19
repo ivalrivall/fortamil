@@ -17,7 +17,7 @@ jobs:
         port: ${{ secrets.SSH_PORT }}
         passphrase: ${{ secrets.SSH_PASSPHRASE }}
         script: |
-          cd /var/www/projects/fortamil
+          cd /www/projects/fortamil
           php artisan down --render="errors::503"
           git reset --hard
           git fetch
