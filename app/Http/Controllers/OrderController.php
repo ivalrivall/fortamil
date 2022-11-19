@@ -13,6 +13,7 @@ use App\Interfaces\OrderRepositoryInterface;
 use App\Interfaces\InvoiceRepositoryInterface;
 use App\Repositories\CustomerRepository;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -140,10 +141,10 @@ class OrderController extends Controller
     /**
      * accpet order
      */
-    public function acceptOrder($orderId) : JsonResponse
+    public function acceptOrder(Request $request, $orderId) : JsonResponse
     {
         try {
-            $order = $this->order->acceptOrderRepo($orderId);
+            $order = $this->order->acceptOrderRepo($orderId, $request->user()->id);
         } catch (\Throwable $th) {
             return $this->onError($th->getMessage());
         }
@@ -207,5 +208,19 @@ class OrderController extends Controller
             }
         }
         return $this->onSuccess($order, 'OK');
+    }
+
+    /**
+     * scan order product
+     */
+    public function scanOrderProduct(Request $request)
+    {
+        $valid = $request->validate(['order_product_id' => 'required|integer|min:1'], $request->all());
+        try {
+            $result = $this->order->scanProduct($valid['order_product_id']);
+        } catch (Exception $e) {
+            return $this->onError($e->getMessage());
+        }
+        return $this->onSuccess($result);
     }
 }

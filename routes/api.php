@@ -72,6 +72,7 @@ Route::prefix('v1')->group(function() {
         Route::get('order/{orderId}', [OrderController::class, 'getDetailOrder'])->middleware(['ability:dropshipper,admin,super_admin,warehouse_officer']);
         Route::post('order/{orderId}/reject', [OrderController::class, 'rejectOrder'])->middleware(['ability:admin']);
         Route::get('order/{orderId}/accept', [OrderController::class, 'acceptOrder'])->middleware(['ability:admin']);
+        Route::post('order/scan', [OrderController::class, 'scanOrderProduct'])->middleware(['ability:warehouse_officer']);
 
         // PAYMENT METHOD
         Route::get('payment-method', [PaymentMethodController::class, 'getAll']);
@@ -86,7 +87,7 @@ Route::prefix('v1')->group(function() {
         Route::post('product/{productId}/disable', [ProductController::class, 'disableProduct'])->middleware(['ability:super_admin']);
 
         // PROFILE
-        Route::get('profile', function() { return auth()->user(); });
+        Route::get('profile', [AuthController::class, 'getProfile']);
 
         // REGISTER
         Route::post('register/warehouse', [AuthController::class, 'registerWarehouseOfficer'])->middleware(['ability:admin,super_admin']);

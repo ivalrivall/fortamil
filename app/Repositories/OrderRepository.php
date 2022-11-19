@@ -16,6 +16,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
+use InvalidArgumentException;
 
 class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 {
@@ -43,7 +44,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
     )
     {
         $this->model = $model;
-        $this->orderProduct = new OrderProduct();
+        $this->orderProduct = new OrderProduct;
         $this->cloudinary = new CloudinaryRepository();
         $this->cartRepo = $cartRepo;
         $this->userRepo = $userRepo;
@@ -238,8 +239,8 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
     {
         try {
             $order = $this->findById($orderId);
-        } catch (\Throwable $th) {
-            throw new Exception('Order not found');
+        } catch (Exception $e) {
+            throw new Exception('Order tidak ditemukan');
         }
         $payloadNotif = [
             'title' => 'Order ditolak',
@@ -252,7 +253,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
             'description' => 'Order anda ditolak dengan alasan: '.$notes,
         ];
         $this->notifRepo->create($payloadNotif);
-        $order->status = 'reject';
+        $order->status = 'rejected';
         $order->save();
         return $order;
     }
@@ -260,12 +261,12 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
     /**
      * accept order
      */
-    public function acceptOrderRepo($orderId)
+    public function acceptOrderRepo($orderId, $adminId)
     {
         try {
             $order = $this->findById($orderId);
-        } catch (\Throwable $th) {
-            throw new Exception('Order not found');
+        } catch (Exception $e) {
+            throw new Exception('Order tidak ditemukan');
         }
         $payloadNotif = [
             'title' => 'Order diterima',
@@ -275,11 +276,37 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
             'notifiable_id' => $order->user_id,
             'data' => json_encode($order),
             'priority' => 'high',
-            'description' => 'Order sudah disetujui dan akan segera diproses',
+            'description' => "Order sudah disetujui oleh admin #$adminId dan akan segera diproses",
         ];
         $this->notifRepo->create($payloadNotif);
-        $order->status = 'on-progress';
+        $order->status = 'accepted';
         $order->save();
         return $order;
+    }
+
+    /**
+     * scan product
+     * @param int $orderProductId
+     */
+    public function scanProduct(int $orderProductId)
+    {
+        try {
+            $orderProduct = $this->orderProduct->find($orderProductId);
+        } catch (Exception $th) {
+            throw new InvalidArgumentException('Order produk tidak ditemukan');
+        }
+        if ($orderProduct->order == null) {
+            throw new InvalidArgumentException('Order tidak ditemukan');
+        }
+        if ($orderProduct->order->status !== 'accepted') {
+            throw new InvalidArgumentException('Order belum di setujui admin');
+        }
+        if ($orderProduct->scanned >= $orderProduct->quantity) {
+            throw new InvalidArgumentException('Semua jumlah produk tipe ini sudah di scan, silahkan ganti ke produk selanjutnya atau order selanjutnya');
+        } else {
+            $orderProduct->scanned = $orderProduct->scanned + 1;
+            $orderProduct->save();
+            return $orderProduct;
+        }
     }
 }
