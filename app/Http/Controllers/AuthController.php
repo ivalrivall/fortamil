@@ -191,4 +191,12 @@ class AuthController extends Controller
         $user->tokens()->delete();
         return $this->onSuccess(null, 'Logout successfully');
     }
+
+    /**
+     * get profile
+     */
+    public function getProfile(Request $request)
+    {
+        return $this->onSuccess($request->user());
+    }
 }
