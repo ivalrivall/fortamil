@@ -13,13 +13,13 @@ use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Notifications\OrderCreated;
 use App\Repositories\BaseRepository;
+use Bugsnag\BugsnagLaravel\Facades\Bugsnag;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use InvalidArgumentException;
-use Bugsnag\BugsnagLaravel\Facades\Bugsnag;
 use RuntimeException;
 
 class OrderRepository extends BaseRepository implements OrderRepositoryInterface

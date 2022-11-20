@@ -14,6 +14,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RegionController;
+use App\Http\Controllers\ReturnController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\TestController;
@@ -96,6 +97,9 @@ Route::prefix('v1')->group(function() {
         Route::post('register/admin', [AuthController::class, 'registerAdmin'])->middleware(['ability:super_admin']);
         Route::post('register/sa', [AuthController::class, 'registerSuperAdmin'])->middleware(['ability:super_admin']);
         Route::post('register/cashier', [AuthController::class, 'registerCashier'])->middleware(['ability:admin,super_admin']);
+
+        // RETURN
+        Route::post('return/request', [ReturnController::class, 'requestReturn'])->middleware(['ability:dropshipper']);
 
         // ROLE
         Route::get('roles', [RoleController::class, 'getRoles'])->middleware(['ability:super_admin']);
