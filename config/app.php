@@ -168,6 +168,7 @@ return [
          * Package Service Providers...
          */
         CloudinaryLabs\CloudinaryLaravel\CloudinaryServiceProvider::class,
+        Bugsnag\BugsnagLaravel\BugsnagServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -194,7 +195,8 @@ return [
     */
 
     'aliases' => Facade::defaultAliases()->merge([
-        'Cloudinary' => CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary::class
+        'Cloudinary' => CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary::class,
+        'Bugsnag' => Bugsnag\BugsnagLaravel\Facades\Bugsnag::class,
     ])->toArray(),
 
     /**

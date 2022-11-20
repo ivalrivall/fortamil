@@ -6,6 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.0.2",
+        "bugsnag/bugsnag-laravel": "^2.0",
         "cloudinary-labs/cloudinary-laravel": "2.0.0",
         "cloudinary/cloudinary_php": "^2",
         "doctrine/dbal": "^3.4",

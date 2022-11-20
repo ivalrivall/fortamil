@@ -73,6 +73,7 @@ Route::prefix('v1')->group(function() {
         Route::post('order/{orderId}/reject', [OrderController::class, 'rejectOrder'])->middleware(['ability:admin']);
         Route::get('order/{orderId}/accept', [OrderController::class, 'acceptOrder'])->middleware(['ability:admin']);
         Route::post('order/scan', [OrderController::class, 'scanOrderProduct'])->middleware(['ability:warehouse_officer']);
+        Route::post('order/upload-proof-packing', [OrderController::class, 'uploadProofPacking'])->middleware(['ability:warehouse_officer']);
 
         // PAYMENT METHOD
         Route::get('payment-method', [PaymentMethodController::class, 'getAll']);

@@ -223,4 +223,22 @@ class OrderController extends Controller
         }
         return $this->onSuccess($result);
     }
+
+    /**
+     * upload proof packing
+     */
+    public function uploadProofPacking(Request $request) : JsonResponse
+    {
+        $valid = $request->validate([
+            'order_id' => 'required|integer|min:1',
+            'picture' => 'required|image'
+        ], $request->all());
+        $request = $request->replace($valid);
+        try {
+            $result = $this->order->uploadProofOfPacking($request->picture, $valid['order_id'], $request->user()->id);
+        } catch (Exception $e) {
+            return $this->onError($e->getMessage());
+        }
+        return $this->onSuccess($result);
+    }
 }
