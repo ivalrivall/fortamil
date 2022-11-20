@@ -6,6 +6,7 @@ use App\Http\Library\ApiHelpers;
 use App\Interfaces\CartRepositoryInterface;
 use App\Interfaces\NotificationRepositoryInterface;
 use App\Interfaces\OrderRepositoryInterface;
+use App\Interfaces\ProductRepositoryInterface;
 use App\Interfaces\UserRepositoryInterface;
 use App\Interfaces\WarehouseRepositoryInterface;
 use App\Models\Order;
@@ -15,8 +16,11 @@ use App\Repositories\BaseRepository;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use InvalidArgumentException;
+use Bugsnag\BugsnagLaravel\Facades\Bugsnag;
+use RuntimeException;
 
 class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 {
@@ -29,6 +33,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
     protected $userRepo;
     protected $warehouseRepo;
     protected $notifRepo;
+    protected $productRepo;
 
     /**
      * BaseRepository constructor.
@@ -40,7 +45,8 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         CartRepositoryInterface $cartRepo,
         UserRepositoryInterface $userRepo,
         WarehouseRepositoryInterface $warehouseRepo,
-        NotificationRepositoryInterface $notifRepo
+        NotificationRepositoryInterface $notifRepo,
+        ProductRepositoryInterface $productRepo
     )
     {
         $this->model = $model;
@@ -50,6 +56,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $this->userRepo = $userRepo;
         $this->warehouseRepo = $warehouseRepo;
         $this->notifRepo = $notifRepo;
+        $this->productRepo = $productRepo;
     }
 
     public function createOrder(array $payload)
@@ -116,14 +123,17 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
                     'description' => 'Order baru dibuat dengan nomor resi: '.$order->number_resi,
                 ];
                 $this->notifRepo->create($payloadNotif);
-            } catch (\Throwable $th) {
+            } catch (Exception $th) {
+                Bugsnag::notifyException($th);
+                Log::error('[createOrder@OrderRepository] 1 => '.$th->getMessage());
                 throw $th->getMessage();
             }
 
             // SEND NOTIF KE USER ADMIN
             try {
                 $admins = $this->userRepo->getUsersByRoleId(1);
-            } catch (\Throwable $th) {
+            } catch (Exception $th) {
+                Log::error('[createOrder@OrderRepository] 2 => '.$th->getMessage());
                 throw $th->getMessage();
             }
             foreach ($admins as $key => $value) {
@@ -139,7 +149,8 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
                         'description' => 'Order baru dibuat dengan nomor resi: '.$order->number_resi,
                     ];
                     $this->notifRepo->create($payloadNotif);
-                } catch (\Throwable $th) {
+                } catch (Exception $th) {
+                    Bugsnag::notifyException($th);
                     throw $th->getMessage();
                 }
             }
@@ -226,8 +237,8 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
     {
         try {
             $order = $this->model->where('id', $orderId)->update(['status' => $status]);
-        } catch (\Throwable $th) {
-            throw new Exception('Failed update status order to '.$status);
+        } catch (Exception $th) {
+            throw new InvalidArgumentException('Failed update status order to '.$status);
         }
         return $order;
     }
@@ -240,7 +251,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         try {
             $order = $this->findById($orderId);
         } catch (Exception $e) {
-            throw new Exception('Order tidak ditemukan');
+            throw new InvalidArgumentException('Order tidak ditemukan');
         }
         $payloadNotif = [
             'title' => 'Order ditolak',
@@ -266,7 +277,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         try {
             $order = $this->findById($orderId);
         } catch (Exception $e) {
-            throw new Exception('Order tidak ditemukan');
+            throw new InvalidArgumentException('Order tidak ditemukan');
         }
         $payloadNotif = [
             'title' => 'Order diterima',
@@ -276,7 +287,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
             'notifiable_id' => $order->user_id,
             'data' => json_encode($order),
             'priority' => 'high',
-            'description' => "Order sudah disetujui oleh admin #$adminId dan akan segera diproses",
+            'description' => "Order sudah disetujui oleh #ADM-$adminId dan akan segera diproses",
         ];
         $this->notifRepo->create($payloadNotif);
         $order->status = 'accepted';
@@ -285,7 +296,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
     }
 
     /**
-     * scan product
+     * scan each product and quantity on order
      * @param int $orderProductId
      */
     public function scanProduct(int $orderProductId)
@@ -298,6 +309,24 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         if ($orderProduct->order == null) {
             throw new InvalidArgumentException('Order tidak ditemukan');
         }
+
+        try {
+            $product = $this->productRepo->findById($orderProduct->product_id);
+        } catch (Exception $th) {
+            throw new InvalidArgumentException("Produk $orderProduct->product_id tidak ditemukan di sistem");
+        }
+        try {
+            $payload = [
+                'id' => $orderProduct->product_id,
+                'quantity' => 1
+            ];
+            $this->productRepo->reduceProductStockService($payload);
+        } catch (Exception $e) {
+            Bugsnag::notifyException($e);
+            Log::error('[scanProduct@OrderRepository] => '.$e->getMessage());
+            throw new InvalidArgumentException($e->getMessage());
+        }
+
         if ($orderProduct->order->status !== 'accepted') {
             throw new InvalidArgumentException('Order belum di setujui admin');
         }
@@ -308,5 +337,67 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
             $orderProduct->save();
             return $orderProduct;
         }
+    }
+
+    /**
+     * upload proof of packing
+     */
+    public function uploadProofOfPacking($picture, $orderId, $warehouseOfficerId)
+    {
+        try {
+            $order = $this->findById($orderId);
+        } catch (Exception $e) {
+            throw new InvalidArgumentException('Order tidak ditemukan');
+        }
+
+        if ($order->status !== 'accepted') {
+            throw new InvalidArgumentException("Order belum disetujui admin");
+        }
+
+        if ($order->status == 'packing') {
+            throw new InvalidArgumentException("Order ini sudah tahap packing");
+        }
+
+        if ($order->orderProducts->count() > 0) {
+            foreach ($order->orderProducts as $key => $value) {
+                if ($value->quantity !== $value->scanned) {
+                    $productId = $value->product->id;
+                    throw new InvalidArgumentException("Produk dengan id $productId, belum selesai di scan");
+                    break;
+                }
+            }
+        } else {
+            throw new InvalidArgumentException("Order ini tidak memiliki produk apapun");
+        }
+
+        try {
+            $pictureUrl = $this->cloudinary->upload(['file' => $picture, 'folder' => 'proof_packing']);
+        } catch (Exception $e) {
+            Bugsnag::notifyException($e);
+            throw new InvalidArgumentException('Gagal upload bukti packing');
+        }
+
+        $order->packing_picture_proof = $pictureUrl;
+        $order->status = 'packing';
+        $order->save();
+
+        try {
+            $payloadNotif = [
+                'title' => 'Order sudah dipacking',
+                'type' => 'App\Notifications\SystemInfo',
+                'icon' => 'ring',
+                'notifiable_type' => 'App\Models\User',
+                'notifiable_id' => $order->user_id,
+                'data' => json_encode($order),
+                'priority' => 'low',
+                'description' => "Order sudah dipacking oleh #WO-$warehouseOfficerId dan akan segera dikirim",
+            ];
+            $this->notifRepo->create($payloadNotif);
+        } catch (Exception $e) {
+            Bugsnag::notifyException($e);
+            Log::error('[uploadProofOfPacking@OrderRepository] => '.$e->getMessage());
+        }
+
+        return $order;
     }
 }
