@@ -241,4 +241,21 @@ class OrderController extends Controller
         }
         return $this->onSuccess($result);
     }
+
+    /**
+     * confirm arrived order
+     */
+    public function confirmArrived(Request $request)
+    {
+        $valid = $request->validate([
+            'order_id' => 'required|numeric|min:1'
+        ]);
+        try {
+            $payload = ['orderId' => $valid['order_id'], 'userId' => $request->user()->id];
+            $order = $this->order->confirmArrivedOrder($payload);
+        } catch (Exception $e) {
+            return $this->onError($e->getMessage());
+        }
+        return $this->onSuccess($order);
+    }
 }

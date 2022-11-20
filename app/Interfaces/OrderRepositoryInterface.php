@@ -14,4 +14,5 @@ interface OrderRepositoryInterface extends BaseRepositoryInterface
     public function acceptOrderRepo($orderId, $adminId);
     public function scanProduct(int $orderProductId);
     public function uploadProofOfPacking($picture, $orderId, $warehouseOfficerId);
+    public function confirmArrivedOrder(array $payload);
 }
