@@ -69,7 +69,7 @@ class ReturnRepository extends BaseRepository implements ReturnRepositoryInterfa
                     'type' => 'App\Notifications\SystemInfo',
                     'icon' => 'ring',
                     'notifiable_type' => 'App\Models\User',
-                    'notifiable_id' => $wo->id,
+                    'notifiable_id' => $value->id,
                     'data' => json_encode($order),
                     'priority' => 'high',
                     'description' => "Request retur oleh dropshipper ".$payload['userId'],
