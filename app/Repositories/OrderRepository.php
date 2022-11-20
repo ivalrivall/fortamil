@@ -400,4 +400,28 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 
         return $order;
     }
+
+    /**
+     * confirm order has arrived
+     */
+    public function confirmArrivedOrder(array $payload)
+    {
+        try {
+            $order = $this->findById($payload['orderId']);
+        } catch (Exception $e) {
+            throw new InvalidArgumentException('Order tidak ditemukan');
+        }
+
+        if ($order->status !== 'packing') {
+            throw new InvalidArgumentException("Order #$order->id belum dikirim");
+        }
+
+        if ($order->user_id !== $payload['userId']) {
+            throw new InvalidArgumentException("Anda tidak diizinkan mengkonfirmasi order ini");
+        }
+
+        $order->status = 'arrived';
+        $order->save();
+        return $order;
+    }
 }

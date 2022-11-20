@@ -7,7 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 /**
  * @param status: waiting, rejected (di tolak admin), accepted (di terima admin), packing (kalau udah scan warehouse),
- *  deliver, arrived, success, failed, cancel, complaint, return
+ *  delivered, arrived, cancel, complaint, return
+ * @param optional_status: success, failed
  */
 class Order extends Model
 {
