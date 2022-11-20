@@ -58,6 +58,9 @@ class ReturnRepository extends BaseRepository implements ReturnRepositoryInterfa
             throw new InvalidArgumentException('Order masih dalam perjalanan / belum di selesaikan');
         }
 
+        $order->status = 'return';
+        $order->save();
+
         $wo = $this->userRepo->getUsersByRoleId(2);
         foreach ($wo as $key => $value) {
             try {
@@ -78,8 +81,6 @@ class ReturnRepository extends BaseRepository implements ReturnRepositoryInterfa
             }
         }
 
-        $order->status = 'return';
-        $order->save();
         return $order;
     }
 }
