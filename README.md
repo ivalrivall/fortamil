@@ -1,3 +1,5 @@
+[![Deployment Production](https://github.com/ivalrivall/fortamil/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/ivalrivall/fortamil/actions/workflows/main.yml)
+
 ## Installment
 
 ```bash
