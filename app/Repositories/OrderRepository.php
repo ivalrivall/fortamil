@@ -279,6 +279,10 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         } catch (Exception $e) {
             throw new InvalidArgumentException('Order tidak ditemukan');
         }
+        $order->status = 'accepted';
+        $order->save();
+
+        // SEND NOTIF TO USER
         $payloadNotif = [
             'title' => 'Order diterima',
             'type' => 'App\Notifications\SystemInfo',
@@ -290,8 +294,23 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
             'description' => "Order sudah disetujui oleh #ADM-$adminId dan akan segera diproses",
         ];
         $this->notifRepo->create($payloadNotif);
-        $order->status = 'accepted';
-        $order->save();
+
+        // SEND NOTIF TO WAREHOUSE
+        $warehouses = $this->userRepo->getUsersByRoleId(2);
+        foreach ($warehouses as $key => $value) {
+            $payloadNotif = [
+                'title' => 'Order diterima',
+                'type' => 'App\Notifications\SystemInfo',
+                'icon' => 'ring',
+                'notifiable_type' => 'App\Models\User',
+                'notifiable_id' => $value->id,
+                'data' => json_encode($order),
+                'priority' => 'high',
+                'description' => "Order #$orderId sudah disetujui oleh #ADM-$adminId dan silahkan proses",
+            ];
+            $this->notifRepo->create($payloadNotif);
+        }
+
         return $order;
     }
 
