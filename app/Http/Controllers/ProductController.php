@@ -12,13 +12,17 @@ use App\Interfaces\PictureProductRepositoryInterface;
 use App\Interfaces\ProductRepositoryInterface;
 use App\Interfaces\WarehouseRepositoryInterface;
 use App\Models\Product;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Milon\Barcode\Facades\DNS2DFacade;
+
 class ProductController extends Controller
 {
     use ApiHelpers;
@@ -103,5 +107,15 @@ class ProductController extends Controller
             Log::error('[reduceStock@ProductContoller]'.$th->getMessage());
             return $this->onError('Failed reduce stock');
         }
+    }
+
+    public function exportProducts(Request $request)
+    {
+        $validated = $request->validate(['warehouse_id' => 'required|numeric|min:1']);
+        $data = Product::where('warehouse_id', $validated['warehouse_id'])->get();
+        $pdf = Pdf::loadView('pdf.product.export_barcode', ['products' => $data]);
+        // download PDF file with download method
+        // return $pdf->download('nama.pdf');
+        return $pdf->stream();
     }
 }

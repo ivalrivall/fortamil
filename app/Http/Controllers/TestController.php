@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Library\ApiHelpers;
 use App\Models\Warehouse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Milon\Barcode\Facades\DNS2DFacade;
 
 class TestController extends Controller
 {
@@ -36,10 +38,13 @@ class TestController extends Controller
      */
     public function store(Request $request)
     {
-        $w = Warehouse::where('id', $request->warehouseId)->first();
-        $u = $request->user();
-        $res = $this->isCanAccessWarehouse($u, $w);
-        return response()->json($res, 200);
+        Storage::disk('barcode')->put('test.png',base64_decode(DNS2DFacade::getBarcodePNG("4", "PDF417")));
+        return DNS2DFacade::getBarcodePNGPath("4", "PDF417");
+        return 'ok';
+        // $w = Warehouse::where('id', $request->warehouseId)->first();
+        // $u = $request->user();
+        // $res = $this->isCanAccessWarehouse($u, $w);
+        // return response()->json($res, 200);
     }
 
     /**

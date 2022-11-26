@@ -4,12 +4,16 @@ namespace App\Repositories;
 
 use App\Interfaces\PictureProductRepositoryInterface;
 use App\Interfaces\ProductRepositoryInterface;
+use App\Jobs\AddingBarcodeProductJob;
 use App\Models\PictureProduct;
 use App\Models\Product;
 use App\Repositories\BaseRepository;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 use InvalidArgumentException;
+use Milon\Barcode\Facades\DNS2DFacade;
 
 class ProductRepository extends BaseRepository implements ProductRepositoryInterface
 {
@@ -35,7 +39,7 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
     {
         $pictureUrl = [];
         foreach ($data['pictures'] as $key => $value) {
-            $pictureUrl[] = $this->cloudinary->upload(['file' => $value]);
+            $pictureUrl[] = $this->cloudinary->upload(['file' => $value, 'folder' => 'product']);
         }
         $product = $this->create([
             'name' => $data['name'],
@@ -58,6 +62,7 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
                 'is_featured' => $key == 0 ? true : false
             ]);
         }
+        AddingBarcodeProductJob::dispatch($product);
         return $product;
     }
 
@@ -106,5 +111,15 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
             throw new InvalidArgumentException('Total stock not sufficient');
         }
         return true;
+    }
+
+    /**
+     * generate barcode for product
+     */
+    public function generateBarcode($productId)
+    {
+        $timestamp = Carbon::now('Asia/Jakarta')->timestamp;
+        Storage::disk('barcode')->put("$timestamp.png", base64_decode(DNS2DFacade::getBarcodePNG($productId, "PDF417")));
+        return Storage::disk('barcode')->url("$timestamp.png");
     }
 }
