@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,6 +17,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+Route::get('/product/barcode-export', [ProductController::class, 'exportProducts'])->name('ex_product_barcode');
 Route::get('/unauthenticate', function () {
     return response()->json([
         'message' => 'Unauthenticate',

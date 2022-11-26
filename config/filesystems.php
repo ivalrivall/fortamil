@@ -56,6 +56,14 @@ return [
             'throw' => false,
         ],
 
+        'barcode' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/barcode'),
+            'url' => env('APP_URL').'/storage/barcode',
+            'visibility' => 'public',
+            'throw' => false,
+        ],
+
     ],
 
     /*

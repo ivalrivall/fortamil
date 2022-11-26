@@ -6,6 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.0.2",
+        "barryvdh/laravel-dompdf": "^2.0",
         "bugsnag/bugsnag-laravel": "^2.0",
         "cloudinary-labs/cloudinary-laravel": "2.0.0",
         "cloudinary/cloudinary_php": "^2",
@@ -16,7 +17,8 @@
         "laravel/sanctum": "^3.0",
         "laravel/telescope": "^4.9",
         "laravel/tinker": "^2.7",
-        "laravolt/indonesia": "^0.32.0"
+        "laravolt/indonesia": "^0.32.0",
+        "milon/barcode": "^9.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
