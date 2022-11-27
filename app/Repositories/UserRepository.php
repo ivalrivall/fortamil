@@ -185,4 +185,19 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         }
         return $users;
     }
+
+    /**
+     * get user by role and warehouse
+     * @param int $roleId
+     */
+    public function getUsersByRoleAndWarehouseId($roleId, $warehouseId)
+    {
+        try {
+            $users = $this->model->where('role_id', $roleId)->where('warehouse_id', $warehouseId)->get();
+        } catch (\Throwable $th) {
+            Log::error('error getUsersByRoleId => '. $th->getMessage());
+            throw new InvalidArgumentException('Failed get users by role & warehouse');
+        }
+        return $users;
+    }
 }

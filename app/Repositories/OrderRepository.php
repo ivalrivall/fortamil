@@ -131,30 +131,33 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 
             // SEND NOTIF KE USER ADMIN
             try {
-                $admins = $this->userRepo->getUsersByRoleId(1);
+                $admins = $this->userRepo->getUsersByRoleAndWarehouseId(1, $order->warehouse_id);
             } catch (Exception $th) {
                 Log::error('[createOrder@OrderRepository] 2 => '.$th->getMessage());
                 throw $th->getMessage();
             }
-            foreach ($admins as $key => $value) {
-                try {
-                    $payloadNotif = [
-                        'title' => 'Order dibuat',
-                        'type' => 'App\Notifications\SystemInfo',
-                        'icon' => 'ring',
-                        'notifiable_type' => 'App\Models\User',
-                        'notifiable_id' => $value->id,
-                        'data' => json_encode($order),
-                        'priority' => 'high',
-                        'description' => 'Order baru dibuat dengan nomor resi: '.$order->number_resi,
-                    ];
-                    $this->notifRepo->create($payloadNotif);
-                } catch (Exception $th) {
-                    Bugsnag::notifyException($th);
-                    throw $th->getMessage();
+
+            if (count($admins) > 0) {
+                foreach ($admins as $key => $value) {
+                    try {
+                        $payloadNotif = [
+                            'title' => 'Order dibuat',
+                            'type' => 'App\Notifications\SystemInfo',
+                            'icon' => 'ring',
+                            'notifiable_type' => 'App\Models\User',
+                            'notifiable_id' => $value->id,
+                            'data' => json_encode($order),
+                            'priority' => 'high',
+                            'description' => 'Order baru dibuat dengan nomor resi: '.$order->number_resi,
+                        ];
+                        $this->notifRepo->create($payloadNotif);
+                    } catch (Exception $th) {
+                        Bugsnag::notifyException($th);
+                        throw $th->getMessage();
+                    }
                 }
+                Notification::sendNow($admins, new OrderCreated($order)); // SEND NOTIF KE EMAIL SEMUA ADMIN
             }
-            Notification::sendNow($admins, new OrderCreated($order)); // SEND NOTIF KE EMAIL SEMUA ADMIN
             DB::commit();
             return $order;
         }
@@ -301,7 +304,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $this->notifRepo->create($payloadNotif);
 
         // SEND NOTIF TO WAREHOUSE
-        $warehouses = $this->userRepo->getUsersByRoleId(2);
+        $warehouses = $this->userRepo->getUsersByRoleAndWarehouseId(2, $order->warehouse_id);
         foreach ($warehouses as $key => $value) {
             $payloadNotif = [
                 'title' => 'Order diterima',
