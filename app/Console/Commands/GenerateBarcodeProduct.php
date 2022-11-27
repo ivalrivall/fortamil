@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\AddingBarcodeProductJob;
 use App\Models\Product;
 use Carbon\Carbon;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
@@ -40,13 +41,12 @@ class GenerateBarcodeProduct extends Command
             $pictureUrl = Cloudinary::upload(storage_path('app/public/barcode/'.$filename), ['folder' => 'barcode'])->getSecurePath();
             Product::where('id', $this->argument('productId'))->update(['barcode_url' => $pictureUrl]);
         } else {
-            $products = Product::where('barcode_url', null)
-                ->whereDate('created_at', '<', Carbon::now('Asia/Jakarta')->toDateTimeString())->get();
+            $products = Product::where('created_at', '<', Carbon::now('Asia/Jakarta')->toDateTimeString())
+                ->where('barcode_url', null)
+                ->get();
             if (count($products) > 0) {
                 foreach ($products as $key => $value) {
-                    Storage::disk('barcode')->put($filename, base64_decode(DNS1DFacade::getBarcodePNG($this->argument('productId'), "C39")));
-                    $pictureUrl = Cloudinary::upload(storage_path('app/public/barcode/'.$filename), ['folder' => 'barcode'])->getSecurePath();
-                    Product::where('id', $value->id)->update(['barcode_url' => $pictureUrl]);
+                    dispatch(new AddingBarcodeProductJob($value));
                 }
             }
         }
