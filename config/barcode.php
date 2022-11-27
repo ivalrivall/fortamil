@@ -2,4 +2,5 @@
 
 return [
     'store_path' => storage_path("app/public/barcode"),
+    'type' => 'C128'
 ];

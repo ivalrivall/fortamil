@@ -13,6 +13,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use InvalidArgumentException;
+use Milon\Barcode\Facades\DNS1DFacade;
 use Milon\Barcode\Facades\DNS2DFacade;
 
 class ProductRepository extends BaseRepository implements ProductRepositoryInterface
@@ -119,7 +120,7 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
     public function generateBarcode($productId)
     {
         $timestamp = Carbon::now('Asia/Jakarta')->timestamp;
-        Storage::disk('barcode')->put("$timestamp.png", base64_decode(DNS2DFacade::getBarcodePNG($productId, "C39")));
+        Storage::disk('barcode')->put("$timestamp.png", base64_decode(DNS1DFacade::getBarcodePNG($productId, config('barcode.type'), 2, 40, array(0, 0, 0), true)));
         return Storage::disk('barcode')->url("$timestamp.png");
     }
 }
