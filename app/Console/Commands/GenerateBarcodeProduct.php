@@ -17,7 +17,7 @@ class GenerateBarcodeProduct extends Command
      *
      * @var string
      */
-    protected $signature = 'barcode:generate {productId?}';
+    protected $signature = 'barcode:generate {productSku?}';
 
     /**
      * The console command description.
@@ -35,14 +35,14 @@ class GenerateBarcodeProduct extends Command
     {
         $timestamp = Carbon::now('Asia/Jakarta')->timestamp;
         $filename = "$timestamp.png";
-        Storage::disk('barcode')->put($filename, base64_decode(DNS1DFacade::getBarcodePNG($this->argument('productId'), "C39")));
 
-        if ($this->argument('productId')) {
+        if ($this->argument('productSku')) {
             $pictureUrl = Cloudinary::upload(storage_path('app/public/barcode/'.$filename), ['folder' => 'barcode'])->getSecurePath();
-            Product::where('id', $this->argument('productId'))->update(['barcode_url' => $pictureUrl]);
+            Storage::disk('barcode')->put($filename, base64_decode(DNS1DFacade::getBarcodePNG($this->argument('productSku'), config('barcode.type'), 2, 40, array(0, 0, 0), true)));
+            Product::where('id', $this->argument('productSku'))->update(['barcode_url' => $pictureUrl]);
         } else {
             $products = Product::where('created_at', '<', Carbon::now('Asia/Jakarta')->toDateTimeString())
-                ->where('barcode_url', null)
+                // ->where('barcode_url', null)
                 ->get();
             if (count($products) > 0) {
                 foreach ($products as $key => $value) {

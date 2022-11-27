@@ -40,10 +40,10 @@ class AddingBarcodeProductJob implements ShouldQueue
      */
     public function handle()
     {
-        $productId = $this->product->id;
+        $productId = $this->product->sku;
         $timestamp = Carbon::now('Asia/Jakarta')->timestamp;
         $filename = "$timestamp.png";
-        Storage::disk('barcode')->put($filename, base64_decode(DNS1DFacade::getBarcodePNG($productId, "C39")));
+        Storage::disk('barcode')->put($filename, base64_decode(DNS1DFacade::getBarcodePNG($productId, config('barcode.type'), 2, 40, array(0, 0, 0), true)));
         $pictureUrl = Cloudinary::upload(storage_path('app/public/barcode/'.$filename), ['folder' => 'barcode'])->getSecurePath();
         $this->product->barcode_url = $pictureUrl;
         $this->product->save();
