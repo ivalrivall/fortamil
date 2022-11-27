@@ -171,6 +171,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $sort = $request->sort;
         $s = $request->search;
         $user = $request->user();
+        $warehouseId = $request->warehouse_id;
         $data = $this->model->with(['store.marketplace', 'customer']);
 
         if ($this->isDropshipper($user)) {
@@ -193,6 +194,10 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
                     });
                 });
             });
+        }
+
+        if ($warehouseId) {
+            $data = $data->where('warehouse_id', $warehouseId);
         }
 
         if ($sort) {
