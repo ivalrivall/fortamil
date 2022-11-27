@@ -106,7 +106,10 @@ class OrderController extends Controller
     public function getUserOrder(BasePaginateRequest $request) : JsonResponse
     {
         $validated = $request->validated();
-        $mergedRequest = $request->merge(array_merge($validated, ['user_id' => $request->user()->id]));
+        $mergedRequest = $request->merge(array_merge($validated, [
+            'user_id' => $request->user()->id,
+            'warehouse_id' => $request->warehouse_id
+        ]));
         $order = $this->order->getUserOrder($mergedRequest);
 
         return $this->onSuccess($order, 'OK');
