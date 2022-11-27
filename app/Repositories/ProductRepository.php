@@ -119,7 +119,7 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
     public function generateBarcode($productId)
     {
         $timestamp = Carbon::now('Asia/Jakarta')->timestamp;
-        Storage::disk('barcode')->put("$timestamp.png", base64_decode(DNS2DFacade::getBarcodePNG($productId, "PDF417")));
+        Storage::disk('barcode')->put("$timestamp.png", base64_decode(DNS2DFacade::getBarcodePNG($productId, "C39")));
         return Storage::disk('barcode')->url("$timestamp.png");
     }
 }
