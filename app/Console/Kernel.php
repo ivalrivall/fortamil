@@ -18,7 +18,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('inspire')->hourly();
         $schedule->command('sanctum:prune-expired --hours=24')->daily();
         $schedule->command('barcode:flushlocalimage')->daily();
-        $schedule->command('queue:work --stop-when-empty')->everyMinute()->withoutOverlapping();;
+        $schedule->command('queue:work --stop-when-empty')->everyMinute()->withoutOverlapping();
+        // $schedule->command('jobs:run --stop-when-empty')->everyMinute()->withoutOverlapping();
     }
 
     /**
