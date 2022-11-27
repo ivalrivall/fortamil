@@ -81,4 +81,18 @@ trait ApiHelpers
         }
         return true;
     }
+
+    protected function validateWarehouse($user, int $warehouseId)
+    {
+        if ($this->isSuperAdmin($user)) {
+            return true;
+        } else if ($this->isDropshipper($user)) {
+            return true;
+        } else {
+            if ($user->warehouse_id !== $warehouseId) {
+                return false;
+            }
+            return true;
+        }
+    }
 }

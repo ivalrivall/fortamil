@@ -106,6 +106,9 @@ class OrderController extends Controller
     public function getUserOrder(BasePaginateRequest $request) : JsonResponse
     {
         $validated = $request->validated();
+        if (!$this->validateWarehouse($request->user(), $request->warehouse_id)) {
+            return $this->onError('List order tidak dapat di akses', 403);
+        }
         $mergedRequest = $request->merge(array_merge($validated, [
             'user_id' => $request->user()->id,
             'warehouse_id' => $request->warehouse_id
