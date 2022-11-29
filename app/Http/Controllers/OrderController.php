@@ -105,6 +105,7 @@ class OrderController extends Controller
      */
     public function getUserOrder(BasePaginateRequest $request) : JsonResponse
     {
+        $request->validate(['warehouse_id' => 'nullable']);
         $validated = $request->validated();
         if (!$this->validateWarehouse($request->user(), $request->warehouse_id)) {
             return $this->onError('List order tidak dapat di akses', 403);

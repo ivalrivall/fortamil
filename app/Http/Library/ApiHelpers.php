@@ -82,7 +82,7 @@ trait ApiHelpers
         return true;
     }
 
-    protected function validateWarehouse($user, int $warehouseId)
+    protected function validateWarehouse($user, $warehouseId)
     {
         if ($this->isSuperAdmin($user)) {
             return true;
