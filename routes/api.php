@@ -7,6 +7,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CloudinaryController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MarketplaceController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderController;
@@ -53,6 +54,9 @@ Route::prefix('v1')->group(function() {
         Route::post('customer-with-address', [CustomerController::class, 'createWithAddress'])->middleware([
             'ability:customer.create,dropshipper'
         ]);
+
+        // DASHBOARD
+        Route::get('dashboard/statistic', [DashboardController::class, 'getStatisticData'])->middleware(['ability:super_admin']);
 
         // LOGOUT
         Route::post('logout', [AuthController::class, 'logout']);
