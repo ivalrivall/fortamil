@@ -24,14 +24,18 @@ return [
         'cart.remove',
         'customer.create',
         'dropshipper',
-        'store.read'
+        'store.read',
+        'store.create',
+        'store.update',
+        'store.delete'
     ],
     'super_admin' => [
         'admin',
         'basic',
         'product.create',
         'super_admin',
-        'store.read'
+        'store.read',
+        'store.create'
     ],
     'warehouse_officer' => [
         'basic',
