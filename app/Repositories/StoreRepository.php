@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Interfaces\StoreRepositoryInterface;
 use App\Models\Store;
 use App\Repositories\BaseRepository;
+use InvalidArgumentException;
 
 class StoreRepository extends BaseRepository implements StoreRepositoryInterface
 {
@@ -28,7 +29,7 @@ class StoreRepository extends BaseRepository implements StoreRepositoryInterface
         $per_page = $request->per_page;
         $sort = $request->sort;
 
-        $data = $this->model->where('user_id', $request->user()->id);
+        $data = $this->model->with(['latestAddress'])->where('user_id', $request->user()->id);
 
         if ($sort) {
             $sort = explode('|', $sort);
@@ -40,5 +41,20 @@ class StoreRepository extends BaseRepository implements StoreRepositoryInterface
         }
 
         return $data->simplePaginate($per_page);
+    }
+
+    /**
+     * check store have on going order
+     * @param Store $store
+     */
+    public function checkStoreHaveOnGoingOrder(Store $store)
+    {
+        $order = $this->model->where('id', $store->id)->whereHas('orders', function($q) {
+            $q->whereIn('status', ['waiting','accepted','packing','complaint','return']);
+        })->first();
+        if ($order) {
+            throw new InvalidArgumentException('Masih ada order yang berlangsung di toko ini');
+        };
+        return true;
     }
 }

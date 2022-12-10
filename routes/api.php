@@ -111,6 +111,9 @@ Route::prefix('v1')->group(function() {
         // STORE
         Route::post('store', [StoreController::class, 'create'])->middleware(['ability:store.create']);
         Route::get('store/paginate', [StoreController::class, 'paginate'])->middleware(['ability:store.read']);
+        Route::post('store/update', [StoreController::class, 'update'])->middleware(['ability:store.update']);
+        Route::get('store/{id}', [StoreController::class, 'getById'])->middleware(['ability:store.read']);
+        Route::delete('store/{id}', [StoreController::class, 'deleteById'])->middleware(['ability:store.delete']);
 
         // TEST
         Route::resource('test', TestController::class);
