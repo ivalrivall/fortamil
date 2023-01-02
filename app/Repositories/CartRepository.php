@@ -11,9 +11,11 @@ use App\Models\Cart;
 use App\Models\Product;
 use App\Models\User;
 use App\Repositories\BaseRepository;
+use Bugsnag\BugsnagLaravel\Facades\Bugsnag;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class CartRepository extends BaseRepository implements CartRepositoryInterface
 {
@@ -57,6 +59,10 @@ class CartRepository extends BaseRepository implements CartRepositoryInterface
         }
         if ($quantity == 0) {
             return $this->deleteById($cartId);
+        }
+        $user = Auth::user();
+        if ($user->id !== $cart->user_id) {
+            throw new Exception('This user cannot edit current cart');
         }
         $isAvailable = $this->product->checkStockIsAvailable($cart->product_id, $quantity);
         if (!$isAvailable) {

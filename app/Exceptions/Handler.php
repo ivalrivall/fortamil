@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Bugsnag\BugsnagLaravel\Facades\Bugsnag;
+use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
 
@@ -44,7 +45,8 @@ class Handler extends ExceptionHandler
      */
     public function register()
     {
-        $this->reportable(function (Throwable $e) {
+        $this->reportable(function (Exception $e) {
+            Bugsnag::notifyException($e);
             if (app()->bound('sentry')) {
                 app('sentry')->captureException($e);
             }
