@@ -83,15 +83,15 @@ class WarehouseRepository extends BaseRepository implements WarehouseRepositoryI
         if ($city) {
             $data = $data->whereHas('addresses', function($q) use ($city) {
                 $q->whereHas('city', function($c) use ($city) {
-                    $c->where('name', 'ilike', "%$city%");
+                    $c->where('name', 'like', "%$city%");
                 });
             });
         }
 
         if ($search) {
             $data = $data->where(function($q) use ($search) {
-                $q->where('name', 'ilike', "%$search%")
-                    ->orWhere('address', 'ilike', "%$search%");
+                $q->where('name', 'like', "%$search%")
+                    ->orWhere('address', 'like', "%$search%");
             });
         }
 
@@ -136,10 +136,10 @@ class WarehouseRepository extends BaseRepository implements WarehouseRepositoryI
 
         if ($search) {
             $data = $data->where(function($q) use ($search) {
-                $q->where('name', 'ilike', "%$search%")
-                ->orWhere('description', 'ilike', "%$search%")
-                ->orWhere('sku', 'ilike', "%$search%")
-                ->orWhereRelation('category', 'name', 'ilike', "%$search%");
+                $q->where('name', 'like', "%$search%")
+                ->orWhere('description', 'like', "%$search%")
+                ->orWhere('sku', 'like', "%$search%")
+                ->orWhereRelation('category', 'name', 'like', "%$search%");
             });
         }
 
@@ -175,10 +175,10 @@ class WarehouseRepository extends BaseRepository implements WarehouseRepositoryI
         }
 
         if ($search) {
-            $data = $data->where('name', 'ilike', "%$search%")->orWhere('address', 'ilike', "%$search%")
+            $data = $data->where('name', 'like', "%$search%")->orWhere('address', 'like', "%$search%")
                 ->orWhereHas('addresses', function($q) use ($search) {
                     $q->whereHas('city', function($c) use ($search) {
-                        $c->where('name', 'ilike', "%$search%");
+                        $c->where('name', 'like', "%$search%");
                     });
                 });
         }

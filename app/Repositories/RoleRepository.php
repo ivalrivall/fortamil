@@ -32,7 +32,7 @@ class RoleRepository extends BaseRepository implements RoleRepositoryInterface
 
         $search = $request->search;
         if ($search) {
-            $data = $data->where('name', 'ilike', "%$search%");
+            $data = $data->where('name', 'like', "%$search%");
         }
         return $data->orderBy('name', 'ASC')->limit(10)->get();
     }

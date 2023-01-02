@@ -76,9 +76,9 @@ class NotificationRepository extends BaseRepository implements NotificationRepos
 
         if ($search) {
             $data->where(function($q) use ($search) {
-                $q->where('type', 'ilike', "%$search%")
-                ->orWhere('priority', 'ilike', "%$search%")
-                ->orWhere('description', 'ilike', "%$search%");
+                $q->where('type', 'like', "%$search%")
+                ->orWhere('priority', 'like', "%$search%")
+                ->orWhere('description', 'like', "%$search%");
             });
         }
 

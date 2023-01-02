@@ -81,9 +81,9 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
         if ($search) {
             $data = $data->where(function($q) use ($search) {
-                $q->where('name', 'ilike', "%$search%")
-                ->orWhere('email', 'ilike', "%$search%")
-                ->orWhereRelation('role', 'name', 'ilike', "%$search%");
+                $q->where('name', 'like', "%$search%")
+                ->orWhere('email', 'like', "%$search%")
+                ->orWhereRelation('role', 'name', 'like', "%$search%");
             });
         }
 

@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CloudinaryController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
@@ -49,6 +50,9 @@ Route::prefix('v1')->group(function() {
         Route::post('cart/quantity', [CartController::class, 'editQuantity'])->middleware(['ability:cart,cart.edit_quantity']);
         Route::get('cart/empty', [CartController::class, 'emptyCart'])->middleware(['ability:cart,cart.empty_quantity']);;
         Route::get('user/carts', [UserController::class, 'getCarts'])->middleware(['ability:cart']);
+
+        // CATEGORY
+        Route::get('category/get-all', [CategoryController::class, 'getAllCategory']);
 
         // CUSTOMER
         Route::post('customer-with-address', [CustomerController::class, 'createWithAddress'])->middleware([
