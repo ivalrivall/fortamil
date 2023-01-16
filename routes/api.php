@@ -77,6 +77,7 @@ Route::prefix('v1')->group(function() {
 
         // ORDER
         Route::post('order', [OrderController::class, 'create'])->middleware(['ability:dropshipper,admin,super_admin']);
+        Route::post('order-cashier', [OrderController::class, 'orderFromCashier'])->middleware(['ability:cashier']);
         Route::get('order/paginate', [OrderController::class, 'getUserOrder']);
         Route::get('order/{orderId}', [OrderController::class, 'getDetailOrder'])->middleware(['ability:dropshipper,admin,super_admin,warehouse_officer']);
         Route::post('order/{orderId}/reject', [OrderController::class, 'rejectOrder'])->middleware(['ability:admin']);

@@ -34,6 +34,8 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
     protected $warehouseRepo;
     protected $notifRepo;
     protected $productRepo;
+    protected $orderProduct;
+    protected $cloudinary;
 
     /**
      * BaseRepository constructor.
