@@ -17,12 +17,11 @@ class NotificationController extends Controller
 
     public function __construct(
         NotificationRepositoryInterface $notif
-    )
-    {
+    ) {
         $this->notif = $notif;
     }
 
-    public function paginateUserNotif(BasePaginateRequest $request) : JsonResponse
+    public function paginateUserNotif(BasePaginateRequest $request): JsonResponse
     {
         $validated = $request->validated();
         $notif = $this->notif->getNotifByUserPaginate($request->merge($validated), $request->user()->id);
