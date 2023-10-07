@@ -25,8 +25,7 @@ class DashboardController extends Controller
         CustomerRepositoryInterface $customer,
         OrderRepositoryInterface $order,
         DashboardRepositoryInterface $dashboard
-    )
-    {
+    ) {
         $this->product = $product;
         $this->customer = $customer;
         $this->order = $order;
