@@ -6,14 +6,14 @@ use App\Http\Library\ApiHelpers;
 use App\Interfaces\RegionRepositoryInterface;
 use Exception;
 use Illuminate\Http\Request;
+
 class RegionController extends Controller
 {
     use ApiHelpers;
     private RegionRepositoryInterface $region;
     public function __construct(
         RegionRepositoryInterface $region
-    )
-    {
+    ) {
         $this->region = $region;
     }
 
